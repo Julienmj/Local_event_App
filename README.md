@@ -103,4 +103,37 @@ https://github.com/Julienmj/Group12-Dotnet-project-
 ---
 
 **Phase 1 Complete** — Project description, problem statement, and team formation established.  
-**Phase 2 In Progress** — Project setup, branch strategy, and team workflow defined.
+**Phase 2 Complete** — Project setup, branch strategy, and team workflow defined.  
+**Phase 3 In Progress** — Frontend and backend implementation underway.
+
+---
+
+## Progress Tracker
+
+### Backend (C# .NET) — Fiacre & Bienfait
+| Feature | Status |
+|---------|--------|
+| ASP.NET Core Web API setup | ✅ Done |
+| JWT Authentication | ✅ Done |
+| User roles (Attendee, Organizer, Admin) | ✅ Done |
+| Users endpoints | ✅ Done |
+| Events endpoints | ✅ Done |
+| Categories endpoints | ✅ Done |
+| Database context (EF Core) | ✅ Done |
+| Connect frontend to backend | ⏳ Pending |
+
+### Frontend (Vue.js) — Julien & Claire
+| Feature | Status |
+|---------|--------|
+| Vue.js + Vite project setup | ✅ Done |
+| Global design system & styles | ✅ Done |
+| App layout (nav + sidebar + filters) | ✅ Done |
+| Home page | ✅ Done |
+| Events page (3-col grid + sections) | ✅ Done |
+| Event card component | ✅ Done |
+| Event detail page | ✅ Done |
+| Login page | ✅ Done |
+| Register page | ✅ Done |
+| Organizer dashboard (CRUD) | ✅ Done |
+| Admin dashboard (users + events) | ✅ Done |
+| Connect frontend to backend API | ⏳ Pending |
