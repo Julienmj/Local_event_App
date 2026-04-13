@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import AppLayout from '../components/AppLayout.vue'
 import EventCard from '../components/EventCard.vue'
 import { useAuthStore } from '../stores/auth'
@@ -66,12 +66,20 @@ import api from '../api'
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 const loading = ref(true)
 const events = ref([])
 const dismissed = ref([])
 
-const visibleEvents = computed(() => events.value.filter(e => !dismissed.value.includes(e.id)))
-const weekendEvents = computed(() => visibleEvents.value.filter(e => e.category === 'Sports' || isThisWeekend(e.date)).slice(0, 3))
+const visibleEvents = computed(() => {
+  let filtered = events.value.filter(e => !dismissed.value.includes(e.id))
+  if (route.query.category) filtered = filtered.filter(e => e.category === route.query.category)
+  if (route.query.location) filtered = filtered.filter(e => e.location.toLowerCase().includes(route.query.location.toLowerCase()))
+  if (route.query.date === 'Today') filtered = filtered.filter(e => new Date(e.date).toDateString() === new Date().toDateString())
+  if (route.query.date === 'This Weekend') filtered = filtered.filter(e => isThisWeekend(e.date))
+  return filtered
+})
+const weekendEvents = computed(() => visibleEvents.value.filter(e => isThisWeekend(e.date)).slice(0, 3))
 const musicEvents = computed(() => visibleEvents.value.filter(e => e.category === 'Music & Art').slice(0, 3))
 
 function isThisWeekend(dateStr) {
