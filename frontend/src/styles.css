@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue: #1D9BF0;
+  --blue-hover: #1a8cd8;
+  --white: #ffffff;
+  --bg: #f5f7fa;
+  --border: #e4e6ea;
+  --text: #0f1419;
+  --muted: #6b7280;
+  --card-radius: 14px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+a { text-decoration: none; color: inherit; }
+
+button {
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  border: none;
+  outline: none;
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover { background: var(--blue-hover); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover { background: var(--border); }
