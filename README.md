@@ -100,6 +100,74 @@ git push origin yourname+id-workspace
 ## Project Repository
 https://github.com/Julienmj/Group12-Dotnet-project-
 
+🌐 **Live Demo:** https://group12-dotnet-project.vercel.app
+
+---
+
+## Getting Started
+
+### Prerequisites
+| Tool | Purpose | Download |
+|------|---------|----------|
+| Git | Version control | https://git-scm.com |
+| Node.js (v18+) | Frontend | https://nodejs.org |
+| .NET SDK (v8+) | Backend | https://dotnet.microsoft.com/download |
+
+---
+
+### Frontend Setup (Vue.js) — Claire & Julien
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Julienmj/Group12-Dotnet-project-
+cd Group12-Dotnet-project-
+
+# 2. Switch to your branch
+git checkout Niyigenaclaire26693-workspace  # Claire
+git checkout Mugishajulien26967-workspace   # Julien
+
+# 3. Install dependencies (once)
+cd frontend
+npm install
+
+# 4. Start dev server
+npm run dev
+```
+Open http://localhost:5173 in your browser.
+
+All frontend code lives inside `frontend/src/`:
+```
+frontend/src/
+├── pages/        → one file per page
+├── components/   → reusable components
+├── stores/       → auth state (Pinia)
+├── router/       → page routes
+├── api.js        → axios base config
+└── styles.css    → global design system
+```
+
+---
+
+### Backend Setup (C# .NET) — Fiacre & Bienfait
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Julienmj/Group12-Dotnet-project-
+cd Group12-Dotnet-project-
+
+# 2. Switch to your branch
+git checkout ntwarifiacre27438-workspace     # Fiacre
+git checkout Ndahiriwebienfait25959-workspace # Bienfait
+
+# 3. Restore dependencies
+cd backend/LocalEventOrganizer
+dotnet restore
+
+# 4. Run the API
+dotnet run --project LocalEventOrganizer
+```
+API runs on http://localhost:5000 — Swagger UI available at http://localhost:5000/swagger
+
 ---
 
 **Phase 1 Complete** — Project description, problem statement, and team formation established.  
