@@ -7,8 +7,8 @@
 
       <form @submit.prevent="handleLogin">
         <div class="form-group">
-          <label>Username</label>
-          <input v-model="form.username" type="text" placeholder="Enter your username" required />
+          <label>Email</label>
+          <input v-model="form.email" type="email" placeholder="Enter your email" required />
         </div>
         <div class="form-group">
           <label>Password</label>
@@ -49,7 +49,7 @@ import api from '../api'
 const router = useRouter()
 const auth = useAuthStore()
 
-const form = reactive({ username: '', password: '' })
+const form = reactive({ email: '', password: '' })
 const loading = ref(false)
 const error = ref('')
 const showPass = ref(false)
@@ -59,7 +59,8 @@ async function handleLogin() {
   error.value = ''
   try {
     const res = await api.post('/auth/login', form)
-    auth.setAuth({ token: res.data.token, user: res.data.user })
+    const { token, user } = res.data
+    auth.setAuth({ token, user: user ?? { email: form.email } })
     router.push('/')
   } catch (e) {
     error.value = e.response?.data?.message || 'Invalid username or password'

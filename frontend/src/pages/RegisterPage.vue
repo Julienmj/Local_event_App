@@ -7,8 +7,8 @@
 
       <form @submit.prevent="handleRegister">
         <div class="form-group">
-          <label>Username</label>
-          <input v-model="form.username" type="text" placeholder="Choose a username" required />
+          <label>Full Name</label>
+          <input v-model="form.fullName" type="text" placeholder="Enter your full name" required />
         </div>
         <div class="form-group">
           <label>Email</label>
@@ -65,7 +65,7 @@ import { useRouter } from 'vue-router'
 import api from '../api'
 
 const router = useRouter()
-const form = reactive({ username: '', email: '', password: '', role: 'Attendee' })
+const form = reactive({ fullName: '', email: '', password: '', role: 'Attendee' })
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
@@ -80,7 +80,12 @@ async function handleRegister() {
   loading.value = true
   error.value = ''
   try {
-    await api.post('/auth/register', form)
+    await api.post('/auth/register', {
+      fullName: form.fullName,
+      email: form.email,
+      password: form.password,
+      role: form.role,
+    })
     success.value = true
     setTimeout(() => router.push('/login'), 1500)
   } catch (e) {
