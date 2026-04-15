@@ -5,7 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-Env.Load();
+if (File.Exists("/etc/secrets/.env"))
+    Env.Load("/etc/secrets/.env");
+else
+    Env.Load();
+
 
 var builder = WebApplication.CreateBuilder(args);
 
