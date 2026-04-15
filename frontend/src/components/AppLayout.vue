@@ -11,8 +11,8 @@
         <router-link to="/events" class="nav-item">
           <span class="nav-icon">📅</span> Events
         </router-link>
-        <router-link to="/events?filter=mine" class="nav-item">
-          <span class="nav-icon">🎟️</span> My Events
+        <router-link v-if="auth.user?.role === 'Attendee'" to="/my-registrations" class="nav-item">
+          <span class="nav-icon">🎟️</span> My Registrations
         </router-link>
         <router-link v-if="auth.user?.role === 'Organizer'" to="/organizer" class="nav-item">
           <span class="nav-icon">🗂️</span> Organizer

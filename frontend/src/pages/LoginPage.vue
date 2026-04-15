@@ -60,7 +60,10 @@ async function handleLogin() {
   try {
     const res = await api.post('/auth/login', form)
     auth.setAuth({ token: res.data.token, user: res.data.user })
-    router.push('/')
+    const role = res.data.user?.role
+    if (role === 'Admin') router.push('/admin')
+    else if (role === 'Organizer') router.push('/organizer')
+    else router.push('/events')
   } catch (e) {
     error.value = e.response?.data?.message || 'Invalid username or password'
   } finally {
