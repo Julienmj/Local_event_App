@@ -170,6 +170,15 @@ npm run preview  # preview production build locally
 
 ---
 
+## Team
+
+| Member | Role | Branch |
+|--------|------|--------|
+| Mugisha Julien | Frontend Lead | `Mugishajulien26967-workspace` |
+| Niyigena Claire | Frontend Developer | `Niyigenaclaire26693-workspace` |
+
+---
+
 ## Contributing
 
 1. Always work on your personal branch only
