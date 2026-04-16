@@ -170,6 +170,25 @@ npm run preview  # preview production build locally
 
 ---
 
+## Backend API Endpoints Used
+
+| Page | Method | Endpoint |
+|------|--------|----------|
+| LoginPage | POST | `/api/auth/login` |
+| RegisterPage | POST | `/api/auth/register` |
+| EventsPage | GET | `/api/events` |
+| EventDetailPage | GET | `/api/events/:id` |
+| EventDetailPage | POST | `/api/events/:id/attend` |
+| OrganizerDashboard | GET | `/api/events/my` |
+| OrganizerDashboard | POST | `/api/events` |
+| OrganizerDashboard | PUT | `/api/events/:id` |
+| OrganizerDashboard | DELETE | `/api/events/:id` |
+| AdminDashboard | GET | `/api/users` |
+| AdminDashboard | PUT | `/api/users/:id/role` |
+| AdminDashboard | DELETE | `/api/users/:id` |
+
+---
+
 ## Responsive Design
 
 The app is fully responsive across all screen sizes:
