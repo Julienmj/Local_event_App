@@ -170,6 +170,25 @@ npm run preview  # preview production build locally
 
 ---
 
+## Git Workflow for Frontend Team
+
+```bash
+# Before starting work — always sync first
+git pull origin FRONT-END
+
+# Work on your changes
+git add .
+git commit -m "describe what you did"
+git push origin your-branch-name
+
+# When task is done — open a Pull Request on GitHub
+# Target: FRONT-END branch
+```
+
+> Never push directly to `main` or `FRONT-END`
+
+---
+
 ## Backend API Endpoints Used
 
 | Page | Method | Endpoint |
