@@ -170,6 +170,127 @@ npm run preview  # preview production build locally
 
 ---
 
+## Team
+
+| Member | Role | Branch |
+|--------|------|--------|
+| Mugisha Julien | Frontend Lead | `Mugishajulien26967-workspace` |
+| Niyigena Claire | Frontend Developer | `Niyigenaclaire26693-workspace` |
+
+---
+
+## Contributing
+
+1. Always work on your personal branch only
+2. Follow the existing code style — Vue 3 Composition API with `<script setup>`
+3. Keep components small and reusable
+4. Use CSS variables from `styles.css` — never hardcode colors
+5. Test your changes locally with `npm run dev` before pushing
+6. Write clear commit messages describing what you did
+
+---
+
+## Known Issues & Pending Tasks
+
+| Task | Status |
+|------|--------|
+| Connect Login/Register to backend JWT | ⏳ Pending |
+| Connect Events page to real API | ⏳ Pending |
+| Connect Organizer dashboard to real API | ⏳ Pending |
+| Connect Admin dashboard to real API | ⏳ Pending |
+| Re-enable auth route guards after backend is connected | ⏳ Pending |
+
+---
+
+## Deployment
+
+The frontend is deployed on **Vercel** and auto-deploys on every push to `main`.
+
+| Setting | Value |
+|---------|-------|
+| Platform | Vercel |
+| Root Directory | `frontend` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Branch | `main` |
+
+To trigger a manual redeploy go to Vercel dashboard → Deployments → Redeploy.
+
+---
+
+## Mock Data
+
+All pages include mock data fallback so the app works without the backend running. Mock data is defined inside each page's `onMounted` catch block.
+
+Once the backend is connected, real data will automatically replace the mock data — no extra changes needed.
+
+---
+
+## Git Workflow for Frontend Team
+
+```bash
+# Before starting work — always sync first
+git pull origin FRONT-END
+
+# Work on your changes
+git add .
+git commit -m "describe what you did"
+git push origin your-branch-name
+
+# When task is done — open a Pull Request on GitHub
+# Target: FRONT-END branch
+```
+
+> Never push directly to `main` or `FRONT-END`
+
+---
+
+## Backend API Endpoints Used
+
+| Page | Method | Endpoint |
+|------|--------|----------|
+| LoginPage | POST | `/api/auth/login` |
+| RegisterPage | POST | `/api/auth/register` |
+| EventsPage | GET | `/api/events` |
+| EventDetailPage | GET | `/api/events/:id` |
+| EventDetailPage | POST | `/api/events/:id/attend` |
+| OrganizerDashboard | GET | `/api/events/my` |
+| OrganizerDashboard | POST | `/api/events` |
+| OrganizerDashboard | PUT | `/api/events/:id` |
+| OrganizerDashboard | DELETE | `/api/events/:id` |
+| AdminDashboard | GET | `/api/users` |
+| AdminDashboard | PUT | `/api/users/:id/role` |
+| AdminDashboard | DELETE | `/api/users/:id` |
+
+---
+
+## Responsive Design
+
+The app is fully responsive across all screen sizes:
+
+| Screen | Behavior |
+|--------|----------|
+| Desktop (1280px+) | 3-column event grid, left nav + right sidebar visible |
+| Tablet (1024px) | 2-column event grid, right sidebar hidden |
+| Mobile (640px) | 1-column grid, left nav hidden |
+
+---
+
+## Environment Variables
+
+Create a `.env` file inside the `frontend/` folder:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+```
+
+Then update `src/api.js` to use it:
+```js
+baseURL: import.meta.env.VITE_API_URL
+```
+
+---
+
 ## Connecting to Backend
 
 All pages use mock data fallback while the backend is being connected. Once the backend is running:
