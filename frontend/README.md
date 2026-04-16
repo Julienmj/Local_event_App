@@ -170,6 +170,14 @@ npm run preview  # preview production build locally
 
 ---
 
+## Mock Data
+
+All pages include mock data fallback so the app works without the backend running. Mock data is defined inside each page's `onMounted` catch block.
+
+Once the backend is connected, real data will automatically replace the mock data — no extra changes needed.
+
+---
+
 ## Git Workflow for Frontend Team
 
 ```bash
