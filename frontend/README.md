@@ -170,6 +170,18 @@ npm run preview  # preview production build locally
 
 ---
 
+## Responsive Design
+
+The app is fully responsive across all screen sizes:
+
+| Screen | Behavior |
+|--------|----------|
+| Desktop (1280px+) | 3-column event grid, left nav + right sidebar visible |
+| Tablet (1024px) | 2-column event grid, right sidebar hidden |
+| Mobile (640px) | 1-column grid, left nav hidden |
+
+---
+
 ## Environment Variables
 
 Create a `.env` file inside the `frontend/` folder:
