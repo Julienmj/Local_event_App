@@ -170,6 +170,18 @@ npm run preview  # preview production build locally
 
 ---
 
+## Known Issues & Pending Tasks
+
+| Task | Status |
+|------|--------|
+| Connect Login/Register to backend JWT | ⏳ Pending |
+| Connect Events page to real API | ⏳ Pending |
+| Connect Organizer dashboard to real API | ⏳ Pending |
+| Connect Admin dashboard to real API | ⏳ Pending |
+| Re-enable auth route guards after backend is connected | ⏳ Pending |
+
+---
+
 ## Deployment
 
 The frontend is deployed on **Vercel** and auto-deploys on every push to `main`.
