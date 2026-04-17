@@ -12,7 +12,15 @@
     <template v-else>
       <!-- Section: This Weekend -->
       <section class="event-section" v-if="weekendEvents.length">
-        <h2 class="section-title">🗓️ This Weekend</h2>
+        <h2 class="section-title">
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          This Weekend
+        </h2>
         <div class="events-grid">
           <EventCard
             v-for="event in weekendEvents"
@@ -26,7 +34,14 @@
 
       <!-- Section: Music & Art -->
       <section class="event-section" v-if="musicEvents.length">
-        <h2 class="section-title">🎵 Music & Art</h2>
+        <h2 class="section-title">
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+          Music & Art
+        </h2>
         <div class="events-grid">
           <EventCard
             v-for="event in musicEvents"
@@ -40,7 +55,15 @@
 
       <!-- Section: All Events -->
       <section class="event-section">
-        <h2 class="section-title">✨ All Events</h2>
+        <h2 class="section-title">
+          <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+            <line x1="9" y1="9" x2="9.01" y2="9"></line>
+            <line x1="15" y1="9" x2="15.01" y2="9"></line>
+          </svg>
+          All Events
+        </h2>
         <div v-if="visibleEvents.length" class="events-grid">
           <EventCard
             v-for="event in visibleEvents"
@@ -131,6 +154,15 @@ onMounted(async () => {
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--blue);
 }
 
 .events-grid {
