@@ -14,8 +14,22 @@
       <h3 class="card-title">{{ event.title }}</h3>
 
       <div class="card-meta">
-        <span class="meta-item">📍 {{ event.location }}</span>
-        <span class="meta-item">👥 {{ event.attendeeCount }} attending</span>
+        <span class="meta-item">
+          <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          {{ event.location }}
+        </span>
+        <span class="meta-item">
+          <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          {{ event.attendeeCount }} attending
+        </span>
       </div>
 
       <div class="card-footer">
@@ -36,17 +50,30 @@
             :class="['action-btn attend', { active: attending }]"
             @click.stop="attending = !attending"
             title="Attend"
-          >✓</button>
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </button>
           <button
             :class="['action-btn save', { active: saved }]"
             @click.stop="saved = !saved"
             title="Save"
-          >♡</button>
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </button>
           <button
             class="action-btn dismiss"
             @click.stop="$emit('dismiss', event.id)"
             title="Dismiss"
-          >✕</button>
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -142,10 +169,14 @@ function formatDate(dateStr) {
 .card-date {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 12px;
   font-weight: 600;
   color: var(--blue);
+}
+
+.date-icon {
+  font-size: 14px;
 }
 
 .card-title {
@@ -162,12 +193,21 @@ function formatDate(dateStr) {
 .card-meta {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .meta-item {
   font-size: 12px;
   color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .card-footer {
@@ -215,12 +255,17 @@ function formatDate(dateStr) {
   border-radius: 50%;
   border: 1px solid var(--border);
   background: var(--white);
-  font-size: 13px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   color: var(--muted);
+  padding: 0;
+}
+
+.action-btn svg {
+  width: 14px;
+  height: 14px;
 }
 
 .action-btn:hover { 
@@ -242,6 +287,10 @@ function formatDate(dateStr) {
   border-color: #e0245e;
   transform: scale(1.1);
   animation: heartbeat 0.6s ease;
+}
+
+.action-btn.save.active svg {
+  fill: #e0245e;
 }
 
 .action-btn.dismiss:hover { 

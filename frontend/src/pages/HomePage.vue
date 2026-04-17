@@ -6,16 +6,10 @@
         <p class="hero-subtitle">Discover local events, connect with your community, and never miss what's happening around you.</p>
         <div class="hero-actions">
           <router-link to="/events" class="btn-primary">
-            <span class="btn-icon">🎉</span>
             Browse Events
           </router-link>
           <router-link v-if="!auth.isLoggedIn" to="/register" class="btn-ghost">Join Free</router-link>
         </div>
-      </div>
-      <div class="hero-decoration">
-        <div class="floating-emoji">🎵</div>
-        <div class="floating-emoji">⚽</div>
-        <div class="floating-emoji">🍕</div>
       </div>
     </div>
 
@@ -61,12 +55,12 @@ import { useAuthStore } from '../stores/auth'
 
 const auth = useAuthStore()
 const categories = [
-  { name: 'Music & Art', icon: '🎵', color: '#FF6B9D' },
-  { name: 'Sports', icon: '⚽', color: '#4CAF50' },
-  { name: 'Food & Drink', icon: '🍕', color: '#FF9800' },
-  { name: 'Tech', icon: '💻', color: '#2196F3' },
-  { name: 'Community', icon: '🤝', color: '#9C27B0' },
-  { name: 'Education', icon: '📚', color: '#00BCD4' },
+  { name: 'Music & Art', icon: '♪', color: '#FF6B9D' },
+  { name: 'Sports', icon: '⚡', color: '#4CAF50' },
+  { name: 'Food & Drink', icon: '☕', color: '#FF9800' },
+  { name: 'Tech', icon: '⚙', color: '#2196F3' },
+  { name: 'Community', icon: '★', color: '#9C27B0' },
+  { name: 'Education', icon: '✎', color: '#00BCD4' },
 ]
 </script>
 
@@ -78,14 +72,10 @@ const categories = [
   margin-bottom: 32px;
   position: relative;
   overflow: hidden;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .hero-content {
-  flex: 1;
-  z-index: 2;
+  max-width: 100%;
 }
 
 .hero-title { 
@@ -114,36 +104,6 @@ const categories = [
   animation: fadeInUp 0.6s ease-out 0.2s backwards;
 }
 
-.btn-icon {
-  margin-right: 6px;
-  display: inline-block;
-  animation: bounce 2s infinite;
-}
-
-.hero-decoration {
-  position: absolute;
-  right: 60px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 20px;
-  opacity: 0.3;
-  z-index: 1;
-}
-
-.floating-emoji {
-  font-size: 48px;
-  animation: float 3s ease-in-out infinite;
-}
-
-.floating-emoji:nth-child(2) {
-  animation-delay: 0.5s;
-}
-
-.floating-emoji:nth-child(3) {
-  animation-delay: 1s;
-}
-
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -153,16 +113,6 @@ const categories = [
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
 }
 
 .stats-row {
@@ -230,8 +180,18 @@ const categories = [
   opacity: 1;
 }
 
-.cat-icon { font-size: 28px; }
-.cat-name { font-size: 11px; font-weight: 600; color: var(--text); text-align: center; }
+.cat-icon { 
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--blue);
+}
+
+.cat-name { 
+  font-size: 11px; 
+  font-weight: 600; 
+  color: var(--text); 
+  text-align: center; 
+}
 
 @media (max-width: 1024px) {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
