@@ -1,35 +1,47 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import axios from 'axios'
+import { useApi } from '@/composables/useApi'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref(localStorage.getItem('token') || null)
-  const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
+  const user = ref(JSON.parse(localStorage.getItem('el_user') || 'null'))
+  const token = ref(localStorage.getItem('el_token') || '')
 
-  const isLoggedIn = computed(() => !!token.value)
-  const isAdmin = computed(() => user.value?.role === 'Admin')
+  const isLoggedIn = computed(() => !!user.value)
   const isOrganizer = computed(() => user.value?.role === 'Organizer')
-  const isAttendee = computed(() => user.value?.role === 'Attendee')
+  const initials = computed(() => {
+    if (!user.value?.fullName) return 'U'
+    return user.value.fullName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
+  })
 
-  function setAuth(data) {
-    token.value = data.token
+  function persist() {
+    localStorage.setItem('el_user', JSON.stringify(user.value))
+    localStorage.setItem('el_token', token.value)
+  }
+
+  async function login(email, password) {
+    const api = useApi()
+    const data = await api.post('/auth/login', { email, password })
+    // The user confirmed format is { user: {...}, token: "..." }
     user.value = data.user
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+    token.value = data.token
+    persist()
+  }
+
+  async function register(fullName, email, password, role) {
+    const api = useApi()
+    const data = await api.post('/auth/register', { fullName, email, password, role })
+    // Assuming register also returns { user, token } or similar
+    user.value = data.user || data
+    token.value = data.token || data.accessToken || ''
+    persist()
   }
 
   function logout() {
-    token.value = null
     user.value = null
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    delete axios.defaults.headers.common['Authorization']
+    token.value = ''
+    localStorage.removeItem('el_user')
+    localStorage.removeItem('el_token')
   }
 
-  if (token.value) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token.value}`
-  }
-
-  return { token, user, isLoggedIn, setAuth, logout }
+  return { user, token, isLoggedIn, isOrganizer, initials, login, register, logout }
 })

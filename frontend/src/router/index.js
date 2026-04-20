@@ -1,62 +1,36 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
-  { path: '/', component: () => import('../pages/HomePage.vue') },
-  { path: '/login', component: () => import('../pages/LoginPage.vue') },
-  { path: '/register', component: () => import('../pages/RegisterPage.vue') },
-  { path: '/events', component: () => import('../pages/EventsPage.vue') },
-  { path: '/events/:id', component: () => import('../pages/EventDetailPage.vue') },
-
-  // Attendee
+{ path: '/', component: () => import('@/views/Landing.vue') },
   {
-    path: '/my-registrations',
-    component: () => import('../pages/MyRegistrationsPage.vue'),
-    meta: { requiresAuth: true }
+    path: '/app',
+    component: () => import('@/views/app/AppShell.vue'),
+    meta: { requiresAuth: true },
+    children: [
+      { path: '', redirect: '/app/dashboard' },
+      { path: 'dashboard', component: () => import('@/views/app/Dashboard.vue') },
+      { path: 'events', component: () => import('@/views/app/BrowseEvents.vue') },
+      { path: 'saved', component: () => import('@/views/app/SavedEvents.vue') },
+      { path: 'myevents', component: () => import('@/views/app/MyEvents.vue') },
+      { path: 'create', component: () => import('@/views/app/CreateEvent.vue') },
+      { path: 'analytics', component: () => import('@/views/app/Analytics.vue') },
+      { path: 'notifications', component: () => import('@/views/app/Notifications.vue') },
+      { path: 'profile', component: () => import('@/views/app/Profile.vue') },
+    ],
   },
-
-  // Organizer
-  {
-    path: '/organizer',
-    component: () => import('../pages/OrganizerDashboard.vue'),
-    meta: { requiresAuth: true, role: 'Organizer' }
-  },
-  {
-    path: '/organizer/events/:id/attendees',
-    component: () => import('../pages/AttendeeListPage.vue'),
-    meta: { requiresAuth: true, role: 'Organizer' }
-  },
-
-  // Admin
-  {
-    path: '/admin',
-    component: () => import('../pages/AdminDashboard.vue'),
-    meta: { requiresAuth: true, role: 'Admin' }
-  },
-
-  // 404
-  { path: '/:pathMatch(.*)*', component: () => import('../pages/NotFoundPage.vue') }
+  { path: '/auth', component: () => import('@/views/Auth.vue') },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
-  scrollBehavior: () => ({ top: 0 })
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to) => {
   const auth = useAuthStore()
-
-  if (to.meta.requiresAuth && !auth.isLoggedIn) {
-    return next('/login')
-  }
-
-  // Admins can access everything
-  if (to.meta.role && auth.user?.role !== to.meta.role && auth.user?.role !== 'Admin') {
-    return next('/')
-  }
-
-  next()
+  if (auth.isLoggedIn && to.path === '/') return '/app'
+  if (to.meta.requiresAuth && !auth.isLoggedIn) return '/auth'
 })
 
 export default router

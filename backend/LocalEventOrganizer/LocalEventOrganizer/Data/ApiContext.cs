@@ -14,5 +14,16 @@ namespace LocalEventOrganizer.Data
         public DbSet<Registration> Registrations { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            foreach (var entity in modelBuilder.Model.GetEntityTypes())
+            {
+                entity.SetTableName(entity.GetTableName()!.ToLower());
+
+                foreach (var property in entity.GetProperties())
+                    property.SetColumnName(property.GetColumnName().ToLower());
+            }
+        }
     }
 }

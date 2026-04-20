@@ -1,0 +1,11 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5055:8080"
+    env_file:
+      - LocalEventOrganizer/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
