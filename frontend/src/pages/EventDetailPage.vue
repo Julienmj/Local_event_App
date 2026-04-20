@@ -17,28 +17,43 @@
 
           <div class="meta-row">
             <div class="meta-item">
-              <span class="meta-icon">📅</span>
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
               <div>
                 <span class="meta-label">Date & Time</span>
                 <span class="meta-value">{{ formatDate(event.date) }}</span>
               </div>
             </div>
             <div class="meta-item">
-              <span class="meta-icon">📍</span>
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
               <div>
                 <span class="meta-label">Location</span>
                 <span class="meta-value">{{ event.location }}</span>
               </div>
             </div>
             <div class="meta-item">
-              <span class="meta-icon">👥</span>
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
               <div>
                 <span class="meta-label">Attendees</span>
                 <span class="meta-value">{{ event.attendeeCount }} going</span>
               </div>
             </div>
             <div class="meta-item">
-              <span class="meta-icon">🗂️</span>
+              <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
               <div>
                 <span class="meta-label">Organizer</span>
                 <span class="meta-value">{{ event.organizer || 'EventLocal' }}</span>
@@ -75,20 +90,32 @@
             @click="toggleAttend"
             :disabled="actionLoading"
           >
-            {{ attending ? '✓ Attending' : 'Join Event' }}
+            <svg v-if="attending" style="width: 16px; height: 16px; margin-right: 6px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+            {{ attending ? 'Attending' : 'Join Event' }}
           </button>
 
           <button
             :class="['btn-ghost action-main-btn', { saved: saved }]"
             @click="saved = !saved"
           >
-            {{ saved ? '♡ Saved' : '♡ Save Event' }}
+            <svg style="width: 16px; height: 16px; margin-right: 6px;" viewBox="0 0 24 24" :fill="saved ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+            </svg>
+            {{ saved ? 'Saved' : 'Save Event' }}
           </button>
 
           <div class="share-row">
             <span class="share-label">Share</span>
             <div class="share-btns">
-              <button class="share-btn" @click="copyLink">🔗 Copy Link</button>
+              <button class="share-btn" @click="copyLink">
+                <svg style="width: 14px; height: 14px; margin-right: 4px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                Copy Link
+              </button>
             </div>
           </div>
 
@@ -256,7 +283,12 @@ onMounted(async () => {
   padding: 14px;
 }
 
-.meta-icon { font-size: 20px; }
+.meta-icon { 
+  width: 20px;
+  height: 20px;
+  color: var(--blue);
+  flex-shrink: 0;
+}
 
 .meta-item div {
   display: flex;
@@ -323,7 +355,17 @@ onMounted(async () => {
 .price { font-size: 22px; font-weight: 700; color: var(--text); }
 .spots { font-size: 12px; color: var(--muted); background: var(--bg); padding: 4px 10px; border-radius: 999px; }
 
-.action-main-btn { width: 100%; padding: 13px; font-size: 14px; border-radius: 10px; text-align: center; }
+.action-main-btn { 
+  width: 100%; 
+  padding: 13px; 
+  font-size: 14px; 
+  border-radius: 10px; 
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .action-main-btn.attending { background: #e8f4fd; color: var(--blue); }
 .action-main-btn.saved { color: #e0245e; border-color: #e0245e; }
 
@@ -338,6 +380,9 @@ onMounted(async () => {
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .share-btn:hover { border-color: var(--blue); color: var(--blue); }

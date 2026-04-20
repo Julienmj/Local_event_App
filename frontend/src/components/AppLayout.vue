@@ -3,22 +3,49 @@
 
     <!-- Left Sidebar Nav -->
     <aside class="left-nav">
-      <div class="logo">📍 EventLocal</div>
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        EventLocal
+      </div>
       <nav>
         <router-link to="/" class="nav-item">
-          <span class="nav-icon">🏠</span> Home
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          Home
         </router-link>
         <router-link to="/events" class="nav-item">
-          <span class="nav-icon">📅</span> Events
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          Events
         </router-link>
-        <router-link to="/events?filter=mine" class="nav-item">
-          <span class="nav-icon">🎟️</span> My Events
+        <router-link v-if="auth.user?.role === 'Attendee'" to="/my-registrations" class="nav-item">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          My Registrations
         </router-link>
         <router-link v-if="auth.user?.role === 'Organizer'" to="/organizer" class="nav-item">
-          <span class="nav-icon">🗂️</span> Organizer
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Organizer
         </router-link>
         <router-link v-if="auth.user?.role === 'Admin'" to="/admin" class="nav-item">
-          <span class="nav-icon">⚙️</span> Admin
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6m5.2-13.2l-4.2 4.2m0 6l4.2 4.2M23 12h-6m-6 0H1m18.2 5.2l-4.2-4.2m0-6l4.2-4.2"></path>
+          </svg>
+          Admin
         </router-link>
       </nav>
       <div class="nav-bottom">
@@ -69,7 +96,10 @@
             :class="['category-item', { active: filters.category === cat.name }]"
             @click="filters.category = cat.name"
           >
-            <span>{{ cat.icon }} {{ cat.name }}</span>
+            <span class="cat-label">
+              <span class="cat-icon-svg" v-html="cat.icon"></span>
+              {{ cat.name }}
+            </span>
             <span class="cat-count">{{ cat.count }}</span>
           </button>
         </div>
@@ -92,12 +122,36 @@ const router = useRouter()
 const filters = reactive({ location: '', date: 'Any', category: '' })
 const dateOptions = ['Any', 'Today', 'This Weekend', 'This Week', 'This Month']
 const categories = [
-  { name: 'Music & Art', icon: '🎵', count: 24 },
-  { name: 'Sports', icon: '⚽', count: 18 },
-  { name: 'Food & Drink', icon: '🍕', count: 12 },
-  { name: 'Tech', icon: '💻', count: 9 },
-  { name: 'Community', icon: '🤝', count: 15 },
-  { name: 'Education', icon: '📚', count: 7 },
+  { 
+    name: 'Music & Art', 
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>',
+    count: 24 
+  },
+  { 
+    name: 'Sports', 
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>',
+    count: 18 
+  },
+  { 
+    name: 'Food & Drink', 
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>',
+    count: 12 
+  },
+  { 
+    name: 'Tech', 
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>',
+    count: 9 
+  },
+  { 
+    name: 'Community', 
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+    count: 15 
+  },
+  { 
+    name: 'Education', 
+    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>',
+    count: 7 
+  },
 ]
 
 function handleLogout() {
@@ -132,11 +186,20 @@ function applyFilters() {
 }
 
 .logo {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--blue);
   margin-bottom: 24px;
   padding-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
 }
 
 nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
@@ -158,7 +221,11 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
   color: var(--blue);
 }
 
-.nav-icon { font-size: 18px; }
+.nav-icon { 
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
 
 .nav-bottom {
   display: flex;
@@ -268,6 +335,25 @@ nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 }
 
 .category-item:hover, .category-item.active { background: #e8f4fd; color: var(--blue); }
+
+.cat-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cat-icon-svg {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-icon-svg svg {
+  width: 100%;
+  height: 100%;
+}
 
 .cat-count {
   background: var(--bg);
