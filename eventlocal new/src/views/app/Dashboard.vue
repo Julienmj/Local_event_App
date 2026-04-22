@@ -1,0 +1,400 @@
+<template>
+  <div class="content-with-aside">
+    <div class="content-main">
+      <div class="page-header">
+        <h1 class="page-title">Good {{ greeting }}, {{ auth.user?.fullName?.split(' ')[0] || 'there' }} 👋</h1>
+        <p class="page-sub">Here's what's happening in your EventLocal world today.</p>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div v-for="kpi in kpis" :key="kpi.label" class="kpi-card">
+          <div class="kpi-icon">{{ kpi.icon }}</div>
+          <div class="kpi-num">{{ kpi.value }}</div>
+          <div class="kpi-label">{{ kpi.label }}</div>
+          <div class="kpi-trend" :class="kpi.up ? 'trend-up' : 'trend-dn'">
+            {{ kpi.up ? '↑' : '↓' }} {{ kpi.trend }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <!-- Category Donut -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <span class="chart-title">Events by Category</span>
+            <span class="chart-badge">{{ eventsStore.events.length }} total</span>
+          </div>
+          <div class="donut-wrap">
+            <canvas ref="donutEl"></canvas>
+            <div class="donut-center">
+              <span class="donut-num">{{ topCat.count }}</span>
+              <span class="donut-sub">{{ topCat.name }}</span>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div v-for="item in catData" :key="item.name" class="legend-item">
+              <span class="legend-dot" :style="{ background: item.color }"></span>
+              <span class="legend-label">{{ item.name }}</span>
+              <span class="legend-val">{{ item.count }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendance Bar -->
+        <div class="chart-card chart-card--wide">
+          <div class="chart-card-header">
+            <span class="chart-title">Attendance vs Capacity</span>
+            <span class="chart-badge">Top {{ attendanceData.length }} events</span>
+          </div>
+          <div class="bar-wrap">
+            <canvas ref="barEl"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fill Rate Sparklines -->
+      <div class="fill-row">
+        <div class="fill-card" v-for="ev in fillEvents" :key="ev.id">
+          <div class="fill-info">
+            <span class="fill-emoji">{{ ev.emoji }}</span>
+            <div>
+              <div class="fill-title">{{ ev.title }}</div>
+              <div class="fill-venue">{{ ev.venueName || ev.venue?.name }}</div>
+            </div>
+          </div>
+          <div class="fill-bar-wrap">
+            <div class="fill-bar-track">
+              <div
+                class="fill-bar-fill"
+                :style="{ width: fillPct(ev) + '%', background: fillColor(ev) }"
+              ></div>
+            </div>
+            <span class="fill-pct" :style="{ color: fillColor(ev) }">{{ fillPct(ev) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Events -->
+      <div class="section-row" style="margin-top:24px">
+        <div class="section-label">{{ auth.isOrganizer ? 'My Managed Events' : 'Upcoming Events' }}</div>
+        <RouterLink :to="auth.isOrganizer ? '/app/myevents' : '/app/events'" class="btn btn-ghost" style="font-size:12px;padding:6px 14px">View all</RouterLink>
+      </div>
+      <div class="upcoming-list">
+        <div
+          v-for="ev in upcomingEvents"
+          :key="ev.id || ev.eventID"
+          class="upcoming-item"
+          @click="openModal(ev)"
+        >
+          <div class="date-block">
+            <div class="date-mon">{{ formatMon(ev.eventDate) }}</div>
+            <div class="date-day">{{ formatDay(ev.eventDate) }}</div>
+          </div>
+          <div class="upcoming-info">
+            <div class="upcoming-title">{{ ev.title }}</div>
+            <div class="upcoming-sub">{{ ev.venue?.name || ev.venueName }} · {{ formatTime(ev.eventDate, ev.eventTime) }}</div>
+          </div>
+          <span class="pill" :class="ev.status === 'live' ? 'pill-live' : 'pill-upcoming'">
+            {{ ev.status === 'live' ? 'Live' : 'Upcoming' }}
+          </span>
+          <span class="pill" :class="ev.price ? 'pill-paid' : 'pill-free'">
+            {{ ev.price ? 'Paid' : 'Free' }}
+          </span>
+        </div>
+        <div v-if="!upcomingEvents.length" class="empty-state">No upcoming events found.</div>
+      </div>
+    </div>
+
+    <!-- Aside: Gemini AI -->
+    <aside class="aside-panel">
+      <AiCopilot />
+    </aside>
+
+    <EventModal
+      v-if="selectedEvent"
+      :event="selectedEvent"
+      :is-saved="eventsStore.isSaved(selectedEvent.id)"
+      :reviews="[]"
+      @close="selectedEvent = null"
+      @save="eventsStore.toggleSave($event)"
+      @registered="eventsStore.addNotification('Registration confirmed for ' + selectedEvent?.title)"
+    />
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue'
+import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController } from 'chart.js'
+import { useAuthStore } from '@/stores/auth'
+import { useEventsStore } from '@/stores/events'
+import AiCopilot from '@/components/AiCopilot.vue'
+import EventModal from '@/components/EventModal.vue'
+
+Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController)
+
+const auth = useAuthStore()
+const eventsStore = useEventsStore()
+const selectedEvent = ref(null)
+const donutEl = ref(null)
+const barEl = ref(null)
+let donutChart = null
+let barChart = null
+
+const AMBER = ['#F59E0B', '#D97706', '#B45309', '#92400E', '#78350F', '#FCD34D']
+const CAT_COLORS = {
+  'Music & Art': '#F59E0B', 'Tech': '#38BDF8', 'Food & Drink': '#FB923C',
+  'Sports': '#4ADE80', 'Community': '#A78BFA', 'Education': '#F472B6'
+}
+
+const greeting = computed(() => {
+  const h = new Date().getHours()
+  return h < 12 ? 'morning' : h < 17 ? 'afternoon' : 'evening'
+})
+
+const upcomingEvents = computed(() => {
+  if (auth.isOrganizer) {
+    const uid = auth.user?.id || auth.user?.userID
+    return eventsStore.events.filter(e => e.organizerID === uid).slice(0, 5)
+  }
+  return eventsStore.events.slice(0, 5)
+})
+
+const kpis = computed(() => [
+  { 
+    icon: '📅', 
+    value: eventsStore.stats?.totalEvents || eventsStore.events.length, 
+    label: auth.isOrganizer ? 'Events Managed' : 'Events Near You', 
+    trend: '+12% this month', 
+    up: true 
+  },
+  { 
+    icon: '🎟️', 
+    value: auth.isOrganizer 
+      ? (eventsStore.stats?.totalAttendees || eventsStore.events.reduce((s, e) => s + (e.attendeesCount || 0), 0)) 
+      : eventsStore.registrations.length, 
+    label: auth.isOrganizer ? 'Total Reach' : 'My Registrations', 
+    trend: '+8% this month', 
+    up: true 
+  },
+  { icon: '🔖', value: eventsStore.savedIds.length, label: 'Saved Events', trend: 'Your wishlist', up: true },
+  { icon: '🔔', value: eventsStore.unreadCount, label: 'Notifications', trend: 'Unread', up: false },
+])
+
+// --- Chart data ---
+const catData = computed(() => {
+  const map = {}
+  eventsStore.events.forEach(e => {
+    const name = e.categoryName || e.category?.name || 'Other'
+    map[name] = (map[name] || 0) + 1
+  })
+  return Object.entries(map)
+    .map(([name, count], i) => ({ name, count, color: CAT_COLORS[name] || AMBER[i % AMBER.length] }))
+    .sort((a, b) => b.count - a.count)
+})
+
+const topCat = computed(() => catData.value[0] || { name: '—', count: 0 })
+
+const attendanceData = computed(() =>
+  [...eventsStore.events]
+    .filter(e => e.capacity)
+    .sort((a, b) => (b.attendeesCount || 0) - (a.attendeesCount || 0))
+    .slice(0, 6)
+)
+
+const fillEvents = computed(() =>
+  [...eventsStore.events]
+    .filter(e => e.capacity)
+    .sort((a, b) => fillPct(b) - fillPct(a))
+    .slice(0, 4)
+)
+
+function fillPct(ev) {
+  if (!ev.capacity) return 0
+  return Math.min(100, Math.round(((ev.attendeesCount || 0) / ev.capacity) * 100))
+}
+
+function fillColor(ev) {
+  const p = fillPct(ev)
+  if (p >= 90) return '#F87171'
+  if (p >= 65) return '#F59E0B'
+  return '#4ADE80'
+}
+
+// --- Chart rendering ---
+const chartDefaults = {
+  color: 'rgba(255,255,255,0.5)',
+  borderColor: 'rgba(255,255,255,0.08)',
+}
+
+function buildDonut() {
+  if (!donutEl.value || !catData.value.length) return
+  donutChart?.destroy()
+  donutChart = new Chart(donutEl.value, {
+    type: 'doughnut',
+    data: {
+      labels: catData.value.map(c => c.name),
+      datasets: [{
+        data: catData.value.map(c => c.count),
+        backgroundColor: catData.value.map(c => c.color),
+        borderColor: '#1a1714',
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      cutout: '72%',
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#1a1714',
+        borderColor: 'rgba(245,158,11,.3)',
+        borderWidth: 1,
+        titleColor: '#fff',
+        bodyColor: 'rgba(255,255,255,.6)',
+        callbacks: { label: ctx => ` ${ctx.parsed} events` }
+      }},
+      animation: { animateRotate: true, duration: 800 },
+    }
+  })
+}
+
+function buildBar() {
+  if (!barEl.value || !attendanceData.value.length) return
+  barChart?.destroy()
+  const labels = attendanceData.value.map(e => e.title.length > 14 ? e.title.slice(0, 14) + '…' : e.title)
+  barChart = new Chart(barEl.value, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Attendees',
+          data: attendanceData.value.map(e => e.attendeesCount || 0),
+          backgroundColor: 'rgba(245,158,11,0.85)',
+          borderRadius: 6,
+          borderSkipped: false,
+        },
+        {
+          label: 'Capacity',
+          data: attendanceData.value.map(e => e.capacity || 0),
+          backgroundColor: 'rgba(255,255,255,0.07)',
+          borderRadius: 6,
+          borderSkipped: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { color: 'rgba(255,255,255,0.45)', font: { size: 11 }, boxWidth: 10, padding: 14 }
+        },
+        tooltip: {
+          backgroundColor: '#1a1714',
+          borderColor: 'rgba(245,158,11,.3)',
+          borderWidth: 1,
+          titleColor: '#fff',
+          bodyColor: 'rgba(255,255,255,.6)',
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
+          grid: { color: 'rgba(255,255,255,0.04)' },
+        },
+        y: {
+          ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
+          grid: { color: 'rgba(255,255,255,0.06)' },
+          beginAtZero: true,
+        }
+      }
+    }
+  })
+}
+
+onMounted(() => { buildDonut(); buildBar() })
+watch(() => eventsStore.events.length, () => { buildDonut(); buildBar() })
+
+function openModal(ev) { selectedEvent.value = ev }
+function formatMon(d) { if (!d) return 'TBA'; return new Date(d).toLocaleDateString('en', { month: 'short' }).toUpperCase() }
+function formatDay(d) { if (!d) return '--'; return new Date(d).getDate() }
+function formatTime(d, t) {
+  if (t) return t
+  if (!d) return ''
+  return new Date(d).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit', hour12: false })
+}
+</script>
+
+<style scoped>
+.content-with-aside { display: flex; flex: 1; overflow: hidden; }
+.content-main { flex: 1; overflow-y: auto; padding: 28px 30px; }
+.aside-panel { width: 300px; border-left: 1px solid var(--border); background: var(--surface); overflow-y: auto; padding: 20px 18px; display: flex; flex-direction: column; gap: 18px; flex-shrink: 0; }
+.page-header { margin-bottom: 26px; }
+.page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; letter-spacing: -0.025em; }
+.page-sub { font-size: 13px; color: var(--ink3); font-weight: 300; }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.kpi-card { background: var(--surface); border-radius: var(--radius-lg); padding: 18px; border: 1px solid var(--border); position: relative; overflow: hidden; transition: box-shadow .2s; }
+.kpi-card:hover { box-shadow: var(--shadow); }
+.kpi-card::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--a400), var(--a200)); }
+.kpi-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--a100); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 12px; }
+.kpi-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 3px; }
+.kpi-label { font-size: 12px; color: var(--ink3); }
+.kpi-trend { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 3px; font-weight: 500; }
+.trend-up { color: var(--teal); } .trend-dn { color: var(--red); }
+
+/* Charts row */
+.charts-row { display: grid; grid-template-columns: 220px 1fr; gap: 14px; margin-bottom: 14px; }
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
+.chart-card--wide { display: flex; flex-direction: column; }
+.chart-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.chart-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
+.chart-badge { font-size: 10px; background: var(--a100); color: var(--a600); padding: 2px 8px; border-radius: 99px; font-weight: 600; }
+
+/* Donut */
+.donut-wrap { position: relative; width: 130px; height: 130px; margin: 0 auto 14px; }
+.donut-wrap canvas { width: 100% !important; height: 100% !important; }
+.donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.donut-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--ink); line-height: 1; }
+.donut-sub { font-size: 9px; color: var(--ink3); text-align: center; max-width: 60px; line-height: 1.3; margin-top: 2px; }
+.donut-legend { display: flex; flex-direction: column; gap: 5px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.legend-label { flex: 1; color: var(--ink3); }
+.legend-val { font-weight: 600; color: var(--ink); }
+
+/* Bar */
+.bar-wrap { flex: 1; min-height: 180px; position: relative; }
+.bar-wrap canvas { width: 100% !important; height: 100% !important; }
+
+/* Fill rate row */
+.fill-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 4px; }
+.fill-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
+.fill-info { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.fill-emoji { font-size: 1.3rem; }
+.fill-title { font-size: 12px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.fill-venue { font-size: 10.5px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.fill-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.fill-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
+.fill-bar-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
+.fill-pct { font-size: 11px; font-weight: 600; min-width: 32px; text-align: right; }
+
+/* Upcoming */
+.section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.section-label { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); }
+.upcoming-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.upcoming-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all .2s; }
+.upcoming-item:hover { border-color: var(--a300); box-shadow: var(--shadow); }
+.date-block { width: 44px; height: 46px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; background: var(--a100); }
+.date-mon { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--a700); }
+.date-day { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.upcoming-info { flex: 1; min-width: 0; }
+.upcoming-title { font-weight: 500; font-size: 13.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+.upcoming-sub { font-size: 11.5px; color: var(--ink3); }
+
+@media (max-width: 1100px) { .fill-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 900px) { .kpi-grid { grid-template-columns: 1fr 1fr; } .charts-row { grid-template-columns: 1fr; } .aside-panel { display: none; } .fill-row { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .fill-row { grid-template-columns: 1fr; } }
+</style>
