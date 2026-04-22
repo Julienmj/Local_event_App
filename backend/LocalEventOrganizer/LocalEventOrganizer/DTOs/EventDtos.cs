@@ -16,6 +16,7 @@ namespace LocalEventOrganizer.DTOs
         public Guid OrganizerID { get; set; }
         public int CategoryID { get; set; }
         public int VenueID { get; set; }
+        public string? ImageUrl { get; set; }
     }
 
     public class UpdateEventDto
@@ -27,5 +28,6 @@ namespace LocalEventOrganizer.DTOs
         public string? Status { get; set; }
         public int? CategoryID { get; set; }
         public int? VenueID { get; set; }
+        public string? ImageUrl { get; set; }
     }
 }
