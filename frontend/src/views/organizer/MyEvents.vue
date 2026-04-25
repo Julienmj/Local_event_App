@@ -186,12 +186,12 @@ async function confirmDelete(ev) {
 .content-main { padding: 28px 30px; overflow-y: auto; }
 .page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .page-sub { font-size: 13px; color: var(--ink3); font-weight: 300; }
-.data-table { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow: hidden; margin-bottom: 22px; }
+.data-table { background: var(--surface); border-radius: var(--radius-lg); border: 1px solid var(--border); overflow-x: auto; margin-bottom: 22px; }
 .table-head { background: var(--cream2); border-bottom: 1px solid var(--border); padding: 9px 16px; font-size: 11px; font-weight: 600; color: var(--ink4); letter-spacing: .07em; text-transform: uppercase; display: grid; }
 .table-row-el { padding: 13px 16px; border-bottom: 1px solid var(--border); align-items: center; transition: background .15s; cursor: pointer; display: grid; }
 .table-row-el:last-child { border-bottom: none; }
 .table-row-el:hover { background: var(--a50); }
-.events-table-cols { grid-template-columns: 2.2fr 1fr 1fr 1fr 120px; }
+.events-table-cols { grid-template-columns: 2.2fr 1fr 1fr 1fr 140px; min-width: 800px; }
 .table-actions { display: flex; gap: 5px; }
 .row-btn { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border2); background: transparent; color: var(--ink2); font-family: 'Plus Jakarta Sans', sans-serif; transition: all .15s; }
 .row-btn:hover { background: var(--cream2); }

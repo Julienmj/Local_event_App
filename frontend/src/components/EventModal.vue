@@ -90,6 +90,8 @@
                 v-for="s in 5" :key="s"
                 :class="stars >= s ? 'ph-fill ph-star star-btn active' : 'ph ph-star star-btn'"
                 @click="stars = s"
+                @mouseenter="stars = s"
+                @mouseleave="stars = currentRating"
               ></i>
             </div>
             <textarea
@@ -127,6 +129,7 @@ const eventsStore = useEventsStore()
 const { show } = useToast()
 
 const stars = ref(0)
+const currentRating = ref(0)
 const reviewText = ref('')
 const registering = ref(false)
 const reviews = ref([])
@@ -183,6 +186,7 @@ async function submitReview() {
     show('Please add a rating and comment.', '⚠️')
     return
   }
+  currentRating.value = stars.value
   try {
     const newReview = await api.post('/reviews', {
       eventID: props.event.id,
@@ -194,8 +198,29 @@ async function submitReview() {
     show('Review submitted! Thanks.', '⭐')
     reviewText.value = ''
     stars.value = 0
+    currentRating.value = 0
   } catch (e) {
     show(e.message || 'Failed to submit review', '⚠️')
   }
 }
 </script>
+
+<style scoped>
+.star-input {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.star-btn {
+  font-size: 18px;
+  color: var(--border2);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.star-btn:hover {
+  color: var(--accent);
+}
+.star-btn.active {
+  color: var(--accent);
+}
+</style>

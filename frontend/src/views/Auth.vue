@@ -44,7 +44,8 @@
           <span v-else>Sign In</span>
         </button>
         <div class="auth-toggle">Don't have an account? <a @click="view = 'register'">Create one</a></div>
-        <div class="demo-hint">
+        <!-- Demo section (hidden from UI but kept in code) -->
+        <!-- <div class="demo-hint">
           <i class="ph ph-info"></i>
           <div style="flex:1">
             <div><strong>Attendee Demo:</strong> attendee@demo.com / 12345678</div>
@@ -52,7 +53,7 @@
           </div>
           <button class="demo-fill" @click="fillAttendeeDemo"><i class="ph ph-user"></i> Attendee</button>
           <button class="demo-fill" @click="fillOrganizerDemo"><i class="ph ph-crown"></i> Organizer</button>
-        </div>
+        </div> -->
       </div>
 
       <!-- REGISTER -->
