@@ -17,10 +17,10 @@
           and manage unforgettable experiences — all from one platform.
         </p>
         <div class="hero-actions">
-          <RouterLink to="/app/events" class="btn btn-amber btn-xl">
+          <RouterLink to="/auth" class="btn btn-amber btn-xl">
             <i class="ph ph-calendar-blank"></i> Discover Events
           </RouterLink>
-          <RouterLink to="/app/create" class="btn btn-ghost btn-lg">
+          <RouterLink to="/auth" class="btn btn-ghost btn-lg">
             <i class="ph ph-plus"></i> Host an Event
           </RouterLink>
         </div>

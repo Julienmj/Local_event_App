@@ -9,9 +9,9 @@
         <div>
           <div class="footer-col-title">Platform</div>
           <div class="footer-links">
-            <RouterLink to="/app/events">Browse Events</RouterLink>
-            <RouterLink to="/app/create">Create Event</RouterLink>
-            <RouterLink to="/app/analytics">Analytics</RouterLink>
+            <RouterLink to="/auth">Browse Events</RouterLink>
+            <RouterLink to="/auth">Create Event</RouterLink>
+            <RouterLink to="/auth">Analytics</RouterLink>
             <a href="#">Mobile App</a>
           </div>
         </div>

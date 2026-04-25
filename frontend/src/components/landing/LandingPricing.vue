@@ -2,7 +2,7 @@
   <section id="pricing" class="pricing-section">
     <div class="section-inner">
       <div style="text-align:center">
-        <div class="eyebrow reveal">Simple Pricing</div>
+        <div class="eyebrow reveal">Free Plans</div>
         <h2 class="section-heading reveal">Choose the plan that fits your <em>experience</em></h2>
       </div>
       <div class="pricing-grid">
@@ -10,9 +10,7 @@
           <div v-if="plan.featured" class="price-badge">Most Popular</div>
           <h3 class="plan-name">{{ plan.name }}</h3>
           <div class="plan-price">
-            <span class="currency">RWF</span>
             <span class="amount">{{ plan.price }}</span>
-            <span class="period">/mo</span>
           </div>
           <p class="plan-desc">{{ plan.desc }}</p>
           <ul class="plan-features">
@@ -33,7 +31,7 @@
 const plans = [
   {
     name: 'Discovery',
-    price: '0',
+    price: 'Free',
     desc: 'For individuals looking to explore and attend events around Rwanda.',
     features: [
       'Unlimited event browsing',
@@ -47,7 +45,7 @@ const plans = [
   },
   {
     name: 'Organizer',
-    price: '15,000',
+    price: 'Free',
     desc: 'Perfect for local organizers hosting recurring events and meetups.',
     features: [
       'Basic AI Copilot access',
@@ -56,13 +54,13 @@ const plans = [
       'Custom venue mapping',
       'Lower booking fees'
     ],
-    cta: 'Start 14-day trial',
+    cta: 'Start organizing',
     link: '/auth',
     featured: true
   },
   {
     name: 'Enterprise',
-    price: '45,000',
+    price: 'Free',
     desc: 'For large-scale agencies and venues requiring full control and data.',
     features: [
       'Full AI Copilot power',
@@ -72,7 +70,7 @@ const plans = [
       'Custom branding options',
       'API access'
     ],
-    cta: 'Contact sales',
+    cta: 'Get started',
     link: '/auth',
     featured: false
   }

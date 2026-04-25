@@ -6,9 +6,9 @@
       <p class="cta-desc reveal">Join thousands of Rwandans already discovering amazing events, building connections, and creating lasting memories.</p>
       <div class="cta-btns reveal">
         <RouterLink to="/auth" class="btn btn-ink btn-xl">Get Started Free</RouterLink>
-        <RouterLink to="/app/create" class="btn btn-outline-amber btn-lg" style="color:#fff;border-color:rgba(255,255,255,.4)">Host an Event</RouterLink>
+        <RouterLink to="/auth" class="btn btn-outline-amber btn-lg" style="color:#fff;border-color:rgba(255,255,255,.4)">Host an Event</RouterLink>
       </div>
-      <div class="cta-note reveal">No credit card · Free forever plan · Cancel anytime</div>
+      <div class="cta-note reveal">Free forever · No credit card required · Cancel anytime</div>
     </div>
   </section>
 </template>
