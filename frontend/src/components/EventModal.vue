@@ -89,9 +89,7 @@
               <i
                 v-for="s in 5" :key="s"
                 :class="stars >= s ? 'ph-fill ph-star star-btn active' : 'ph ph-star star-btn'"
-                @click="stars = s"
-                @mouseenter="stars = s"
-                @mouseleave="stars = currentRating"
+                @click="setRating(s)"
               ></i>
             </div>
             <textarea
@@ -129,7 +127,6 @@ const eventsStore = useEventsStore()
 const { show } = useToast()
 
 const stars = ref(0)
-const currentRating = ref(0)
 const reviewText = ref('')
 const registering = ref(false)
 const reviews = ref([])
@@ -159,6 +156,10 @@ const formattedTime = computed(() => {
   return new Date(props.event.eventDate).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit', hour12: false })
 })
 
+function setRating(rating) {
+  stars.value = rating
+}
+
 async function handleRegister() {
   if (!auth.isLoggedIn) {
     show('Please sign in to register.', '📍')
@@ -186,7 +187,6 @@ async function submitReview() {
     show('Please add a rating and comment.', '⚠️')
     return
   }
-  currentRating.value = stars.value
   try {
     const newReview = await api.post('/reviews', {
       eventID: props.event.id,
@@ -198,7 +198,6 @@ async function submitReview() {
     show('Review submitted! Thanks.', '⭐')
     reviewText.value = ''
     stars.value = 0
-    currentRating.value = 0
   } catch (e) {
     show(e.message || 'Failed to submit review', '⚠️')
   }
