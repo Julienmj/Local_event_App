@@ -4,21 +4,33 @@ import { useAuthStore } from '@/stores/auth'
 const routes = [
 { path: '/', component: () => import('@/views/Landing.vue') },
   {
-    path: '/app',
-    component: () => import('@/views/app/AppShell.vue'),
-    meta: { requiresAuth: true },
+    path: '/attendee',
+    component: () => import('@/views/attendee/AttendeeShell.vue'),
+    meta: { requiresAuth: true, role: 'attendee' },
     children: [
-      { path: '', redirect: '/app/dashboard' },
-      { path: 'dashboard', component: () => import('@/views/app/Dashboard.vue') },
-      { path: 'events', component: () => import('@/views/app/BrowseEvents.vue') },
-      { path: 'saved', component: () => import('@/views/app/SavedEvents.vue') },
-      { path: 'myevents', component: () => import('@/views/app/MyEvents.vue'), meta: { requiresOrganizer: true } },
-      { path: 'create', component: () => import('@/views/app/CreateEvent.vue'), meta: { requiresOrganizer: true } },
-      { path: 'analytics', component: () => import('@/views/app/Analytics.vue'), meta: { requiresOrganizer: true } },
-      { path: 'venues', component: () => import('@/views/app/Venues.vue'), meta: { requiresOrganizer: true } },
-      { path: 'categories', component: () => import('@/views/app/Categories.vue'), meta: { requiresOrganizer: true } },
-      { path: 'notifications', component: () => import('@/views/app/Notifications.vue') },
-      { path: 'profile', component: () => import('@/views/app/Profile.vue') },
+      { path: '', redirect: '/attendee/dashboard' },
+      { path: 'dashboard', component: () => import('@/views/attendee/Dashboard.vue') },
+      { path: 'events', component: () => import('@/views/attendee/BrowseEvents.vue') },
+      { path: 'saved', component: () => import('@/views/attendee/SavedEvents.vue') },
+      { path: 'ai-assistant', component: () => import('@/views/attendee/AiAssistant.vue') },
+      { path: 'notifications', component: () => import('@/views/attendee/Notifications.vue') },
+      { path: 'profile', component: () => import('@/views/attendee/Profile.vue') },
+    ],
+  },
+  {
+    path: '/organizer',
+    component: () => import('@/views/organizer/OrganizerShell.vue'),
+    meta: { requiresAuth: true, role: 'organizer' },
+    children: [
+      { path: '', redirect: '/organizer/dashboard' },
+      { path: 'dashboard', component: () => import('@/views/organizer/Dashboard.vue') },
+      { path: 'events', component: () => import('@/views/organizer/MyEvents.vue') },
+      { path: 'create', component: () => import('@/views/organizer/CreateEvent.vue') },
+      { path: 'analytics', component: () => import('@/views/organizer/Analytics.vue') },
+      { path: 'venues', component: () => import('@/views/organizer/Venues.vue') },
+      { path: 'categories', component: () => import('@/views/organizer/Categories.vue') },
+      { path: 'notifications', component: () => import('@/views/organizer/Notifications.vue') },
+      { path: 'profile', component: () => import('@/views/organizer/Profile.vue') },
     ],
   },
   { path: '/auth', component: () => import('@/views/Auth.vue') },
@@ -32,9 +44,14 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const auth = useAuthStore()
-  if (auth.isLoggedIn && (to.path === '/' || to.path === '/auth')) return '/app/dashboard'
+  if (auth.isLoggedIn && (to.path === '/' || to.path === '/auth')) {
+    // Redirect based on user role
+    if (auth.isOrganizer) return '/organizer/dashboard'
+    return '/attendee/dashboard'
+  }
   if (to.meta.requiresAuth && !auth.isLoggedIn) return '/auth'
-  if (to.meta.requiresOrganizer && !auth.isOrganizer) return '/app/events'
+  if (to.meta.role === 'organizer' && !auth.isOrganizer) return '/attendee/dashboard'
+  if (to.meta.role === 'attendee' && auth.isOrganizer) return '/organizer/dashboard'
 })
 
 export default router

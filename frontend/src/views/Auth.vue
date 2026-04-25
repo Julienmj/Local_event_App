@@ -46,8 +46,12 @@
         <div class="auth-toggle">Don't have an account? <a @click="view = 'register'">Create one</a></div>
         <div class="demo-hint">
           <i class="ph ph-info"></i>
-          Demo: <strong>demo@gmail.com</strong> / <strong>12345678</strong>
-          <button class="demo-fill" @click="fillDemo"><i class="ph ph-lightning"></i> Use demo</button>
+          <div style="flex:1">
+            <div><strong>Attendee Demo:</strong> attendee@demo.com / 12345678</div>
+            <div><strong>Organizer Demo:</strong> admin@eventlocal.com / admin123</div>
+          </div>
+          <button class="demo-fill" @click="fillAttendeeDemo"><i class="ph ph-user"></i> Attendee</button>
+          <button class="demo-fill" @click="fillOrganizerDemo"><i class="ph ph-crown"></i> Organizer</button>
         </div>
       </div>
 
@@ -72,8 +76,8 @@
           <label class="form-label">I want to</label>
           <select v-model="role" class="form-input">
             <option value="Attendee">Discover & attend events</option>
-            <option value="Organizer">Organise & host events</option>
           </select>
+          <p style="font-size:12px;color:var(--text3);margin-top:6px">Only attendee registration is available. Organizer access is admin-only.</p>
         </div>
         <button class="btn btn-amber btn-full" :disabled="loading" @click="handleRegister">
           <span v-if="loading" class="loading-spinner"></span>
@@ -154,9 +158,16 @@ onMounted(() => {
 
 function clearFeedback() { error.value = ''; success.value = '' }
 
-function fillDemo() {
-  email.value = 'demo@gmail.com'
+function fillAttendeeDemo() {
+  email.value = 'attendee@demo.com'
   password.value = '12345678'
+  role.value = 'Attendee'
+}
+
+function fillOrganizerDemo() {
+  email.value = 'admin@eventlocal.com'
+  password.value = 'admin123'
+  role.value = 'Attendee' // Role is handled in login logic
 }
 
 async function handleLogin() {
@@ -164,18 +175,33 @@ async function handleLogin() {
   if (!email.value || !password.value) { error.value = 'Please fill in all fields.'; return }
   loading.value = true
   try {
-    // Demo account — bypass backend
-    if (email.value === 'demo@gmail.com' && password.value === '12345678') {
-      const demoUser = { id: 'demo-001', email: 'demo@gmail.com', fullName: 'Demo User', role: 'Organizer' }
+    // Attendee demo account
+    if (email.value === 'attendee@demo.com' && password.value === '12345678') {
+      const demoUser = { id: 'attendee-001', email: 'attendee@demo.com', fullName: 'Demo Attendee', role: 'Attendee' }
       localStorage.setItem('user', JSON.stringify(demoUser))
-      localStorage.setItem('token', 'demo-token')
+      localStorage.setItem('token', 'attendee-demo-token')
       auth.user = demoUser
-      auth.token = 'demo-token'
-      router.push('/app/dashboard')
+      auth.token = 'attendee-demo-token'
+      router.push('/attendee/dashboard')
+      return
+    }
+    // Organizer demo account
+    if (email.value === 'admin@eventlocal.com' && password.value === 'admin123') {
+      const demoUser = { id: 'admin-001', email: 'admin@eventlocal.com', fullName: 'EventLocal Admin', role: 'Admin' }
+      localStorage.setItem('user', JSON.stringify(demoUser))
+      localStorage.setItem('token', 'admin-demo-token')
+      auth.user = demoUser
+      auth.token = 'admin-demo-token'
+      router.push('/organizer/dashboard')
       return
     }
     await auth.login(email.value, password.value)
-    router.push('/app/dashboard')
+    // Redirect based on role after successful login
+    if (auth.isOrganizer) {
+      router.push('/organizer/dashboard')
+    } else {
+      router.push('/attendee/dashboard')
+    }
   } catch (e) {
     error.value = e.message || 'Login failed. Please try again.'
   } finally {
@@ -189,8 +215,8 @@ async function handleRegister() {
   if (password.value.length < 8) { error.value = 'Password must be at least 8 characters.'; return }
   loading.value = true
   try {
-    await auth.register(name.value, email.value, password.value, role.value)
-    router.push('/app/dashboard')
+    await auth.register(name.value, email.value, password.value, 'Attendee')
+    router.push('/attendee/dashboard')
   } catch (e) {
     error.value = e.message || 'Registration failed. Please try again.'
   } finally {

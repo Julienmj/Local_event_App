@@ -60,23 +60,29 @@ const auth = useAuthStore()
 const eventsStore = useEventsStore()
 const router = useRouter()
 
-const mainNav = [
-  { to: '/app/dashboard', icon: 'ph-squares-four',   label: 'Dashboard' },
-  { to: '/app/events',    icon: 'ph-calendar-blank', label: 'Browse Events' },
-  { to: '/app/saved',     icon: 'ph-ticket',         label: 'My Bookings' },
+const mainNav = auth.isOrganizer ? [
+  { to: '/organizer/dashboard', icon: 'ph-squares-four',   label: 'Dashboard' },
+  { to: '/organizer/events',    icon: 'ph-calendar-blank', label: 'My Events' },
+  { to: '/organizer/analytics',  icon: 'ph-chart-bar',    label: 'Analytics' },
+] : [
+  { to: '/attendee/dashboard', icon: 'ph-squares-four',   label: 'Dashboard' },
+  { to: '/attendee/events',    icon: 'ph-calendar-blank', label: 'Browse Events' },
+  { to: '/attendee/saved',     icon: 'ph-ticket',         label: 'My Bookings' },
+  { to: '/attendee/ai-assistant', icon: 'ph-robot',       label: 'AI Assistant' },
 ]
 
 const organizerNav = [
-  { to: '/app/myevents',   icon: 'ph-list-checks',  label: 'My Events' },
-  { to: '/app/create',     icon: 'ph-plus-circle',  label: 'Create Event' },
-  { to: '/app/analytics',  icon: 'ph-chart-bar',    label: 'Analytics' },
-  { to: '/app/venues',     icon: 'ph-map-pin',      label: 'Venues' },
-  { to: '/app/categories', icon: 'ph-tag',          label: 'Categories' },
+  { to: '/organizer/create',     icon: 'ph-plus-circle',  label: 'Create Event' },
+  { to: '/organizer/venues',     icon: 'ph-map-pin',      label: 'Venues' },
+  { to: '/organizer/categories', icon: 'ph-tag',          label: 'Categories' },
 ]
 
-const accountNav = [
-  { to: '/app/notifications', icon: 'ph-bell',        label: 'Notifications', badge: true },
-  { to: '/app/profile',       icon: 'ph-user-circle', label: 'Profile' },
+const accountNav = auth.isOrganizer ? [
+  { to: '/organizer/notifications', icon: 'ph-bell',        label: 'Notifications', badge: true },
+  { to: '/organizer/profile',       icon: 'ph-user-circle', label: 'Profile' },
+] : [
+  { to: '/attendee/notifications', icon: 'ph-bell',        label: 'Notifications', badge: true },
+  { to: '/attendee/profile',       icon: 'ph-user-circle', label: 'Profile' },
 ]
 
 function handleLogout() {
