@@ -88,8 +88,10 @@
             <div class="star-input">
               <i
                 v-for="s in 5" :key="s"
-                :class="stars >= s ? 'ph-fill ph-star star-btn active' : 'ph ph-star star-btn'"
+                :class="getStarClass(s)"
                 @click="setRating(s)"
+                @mouseenter="hoverRating = s"
+                @mouseleave="hoverRating = 0"
               ></i>
             </div>
             <textarea
@@ -127,6 +129,7 @@ const eventsStore = useEventsStore()
 const { show } = useToast()
 
 const stars = ref(0)
+const hoverRating = ref(0)
 const reviewText = ref('')
 const registering = ref(false)
 const reviews = ref([])
@@ -156,8 +159,14 @@ const formattedTime = computed(() => {
   return new Date(props.event.eventDate).toLocaleTimeString('en', { hour: '2-digit', minute: '2-digit', hour12: false })
 })
 
+function getStarClass(starNumber) {
+  const isActive = hoverRating.value > 0 ? hoverRating.value >= starNumber : stars.value >= starNumber
+  return isActive ? 'ph-fill ph-star star-btn active' : 'ph ph-star star-btn'
+}
+
 function setRating(rating) {
   stars.value = rating
+  hoverRating.value = 0
 }
 
 async function handleRegister() {
@@ -198,6 +207,7 @@ async function submitReview() {
     show('Review submitted! Thanks.', '⭐')
     reviewText.value = ''
     stars.value = 0
+    hoverRating.value = 0
   } catch (e) {
     show(e.message || 'Failed to submit review', '⚠️')
   }
@@ -211,15 +221,17 @@ async function submitReview() {
   margin-bottom: 8px;
 }
 .star-btn {
-  font-size: 18px;
-  color: var(--border2);
+  font-size: 20px;
+  color: #d1d5db;
   cursor: pointer;
   transition: color 0.2s;
+  user-select: none;
+  display: inline-block;
 }
 .star-btn:hover {
-  color: var(--accent);
+  color: #f59e0b;
 }
 .star-btn.active {
-  color: var(--accent);
+  color: #f59e0b;
 }
 </style>
