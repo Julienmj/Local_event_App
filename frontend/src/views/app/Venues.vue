@@ -18,8 +18,8 @@
           <div class="venue-coords">{{ v.latitude }}, {{ v.longitude }}</div>
         </div>
         <div class="venue-actions">
-          <button class="btn-icon" @click="openEdit(v)">✏️</button>
-          <button class="btn-icon" @click="handleDelete(v.id)">🗑️</button>
+          <button class="btn-icon" @click="openEdit(v)"><i class="ph ph-pencil-simple"></i></button>
+          <button class="btn-icon danger" @click="handleDelete(v.id)"><i class="ph ph-trash"></i></button>
         </div>
       </div>
     </div>
@@ -88,10 +88,10 @@ async function handleSubmit() {
   try {
     if (modal.mode === 'create') {
       await eventsStore.createVenue(modal.form)
-      show('Venue created!', '📍')
+      show('Venue created!', '✅')
     } else {
       await eventsStore.updateVenue(modal.form.id, modal.form)
-      show('Venue updated!', '📍')
+      show('Venue updated!', '✅')
     }
     modal.show = false
   } catch (e) {
@@ -105,7 +105,7 @@ async function handleDelete(id) {
   if (!confirm('Are you sure?')) return
   try {
     await eventsStore.deleteVenue(id)
-    show('Venue deleted', '🗑️')
+    show('Venue deleted', '✅')
   } catch (e) {
     show(e.message || 'Error deleting venue', '⚠️')
   }
@@ -120,6 +120,7 @@ async function handleDelete(id) {
 .venue-addr { font-size: 12.5px; color: var(--ink3); margin-top: 2px; }
 .venue-coords { font-size: 11px; color: var(--ink4); font-family: monospace; }
 .venue-actions { display: flex; gap: 8px; }
-.btn-icon { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 4px; border-radius: 4px; transition: background .2s; }
-.btn-icon:hover { background: var(--cream2); }
+.btn-icon { width: 32px; height: 32px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; font-size: 15px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--text2); transition: all .2s; }
+.btn-icon:hover { background: var(--accent-l); color: var(--accent); border-color: var(--accent); }
+.btn-icon.danger:hover { background: var(--err-bg); color: var(--err); border-color: var(--err); }
 </style>

@@ -18,12 +18,12 @@
         :class="{ unread: !n.isRead }"
         @click="eventsStore.markRead(n.id || n.notificationID)"
       >
-        <div class="notif-icon">🔔</div>
+        <div class="notif-icon"><i class="ph ph-bell"></i></div>
         <div style="flex:1">
           <div class="notif-title">{{ n.message }}</div>
           <div class="notif-body">{{ timeAgo(n.createdAt) }}</div>
         </div>
-        <span v-if="!n.isRead" style="width:8px;height:8px;background:var(--a500);border-radius:50%;flex-shrink:0"></span>
+        <span v-if="!n.isRead" class="unread-dot"></span>
       </div>
     </div>
     <div v-else class="empty">
@@ -63,7 +63,8 @@ function timeAgo(iso) {
 .notif-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; transition: all .2s; }
 .notif-item:hover { border-color: var(--a300); background: var(--a50); }
 .notif-item.unread { border-left: 3px solid var(--a500); background: var(--a50); }
-.notif-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--a100); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+.notif-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-l); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--accent); flex-shrink: 0; }
+.unread-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
 .notif-title { font-size: 13.5px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
 .notif-body { font-size: 12px; color: var(--ink3); font-weight: 300; }
 </style>

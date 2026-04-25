@@ -7,7 +7,7 @@
         <div class="auth-left-blob auth-blob2"></div>
       </div>
       <div class="auth-brand">
-        <div class="auth-brand-icon">📍</div>
+        <div class="auth-brand-icon"><i class="ph-bold ph-map-pin" style="font-size:18px;color:#fff"></i></div>
         <span class="auth-brand-name">EventLocal</span>
       </div>
       <div class="auth-left-content">
@@ -37,14 +37,19 @@
           <input v-model="password" class="form-input" type="password" placeholder="••••••••" @keydown.enter="handleLogin"/>
         </div>
         <div style="text-align:right;margin-bottom:18px">
-          <a style="font-size:13px;color:var(--a700);cursor:pointer" @click="view = 'forgot'">Forgot password?</a>
+          <a style="font-size:13px;color:var(--accent);cursor:pointer" @click="view = 'forgot'">Forgot password?</a>
         </div>
         <button class="btn btn-amber btn-full" :disabled="loading" @click="handleLogin">
           <span v-if="loading" class="loading-spinner"></span>
           <span v-else>Sign In</span>
         </button>
         <div class="auth-toggle">Don't have an account? <a @click="view = 'register'">Create one</a></div>
-</div>
+        <div class="demo-hint">
+          <i class="ph ph-info"></i>
+          Demo: <strong>demo@gmail.com</strong> / <strong>12345678</strong>
+          <button class="demo-fill" @click="fillDemo"><i class="ph ph-lightning"></i> Use demo</button>
+        </div>
+      </div>
 
       <!-- REGISTER -->
       <div v-else-if="view === 'register'" class="auth-box">
@@ -79,7 +84,7 @@
 
       <!-- FORGOT PASSWORD -->
       <div v-else-if="view === 'forgot'" class="auth-box">
-        <div class="back-link" @click="view = 'login'">← Back to sign in</div>
+        <div class="back-link" @click="view = 'login'"><i class="ph ph-arrow-left"></i> Back to sign in</div>
         <h2 class="auth-title">Reset password</h2>
         <p class="auth-sub">Enter your email and we'll send you a reset link</p>
         <div v-if="success" class="success-msg">{{ success }}</div>
@@ -149,11 +154,26 @@ onMounted(() => {
 
 function clearFeedback() { error.value = ''; success.value = '' }
 
+function fillDemo() {
+  email.value = 'demo@gmail.com'
+  password.value = '12345678'
+}
+
 async function handleLogin() {
   clearFeedback()
   if (!email.value || !password.value) { error.value = 'Please fill in all fields.'; return }
   loading.value = true
   try {
+    // Demo account — bypass backend
+    if (email.value === 'demo@gmail.com' && password.value === '12345678') {
+      const demoUser = { id: 'demo-001', email: 'demo@gmail.com', fullName: 'Demo User', role: 'Organizer' }
+      localStorage.setItem('user', JSON.stringify(demoUser))
+      localStorage.setItem('token', 'demo-token')
+      auth.user = demoUser
+      auth.token = 'demo-token'
+      router.push('/app/dashboard')
+      return
+    }
     await auth.login(email.value, password.value)
     router.push('/app/dashboard')
   } catch (e) {
@@ -212,31 +232,33 @@ async function handleReset() {
 
 <style scoped>
 .auth-shell { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
-.auth-left { background: var(--ink); position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 48px; overflow: hidden; }
+.auth-left { background: var(--surface); position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 48px; overflow: hidden; border-right: 1px solid var(--border); }
 .auth-left-bg { position: absolute; inset: 0; }
-.auth-left-blob { position: absolute; border-radius: 50%; filter: blur(60px); }
-.auth-blob1 { width: 350px; height: 350px; background: var(--a500); opacity: .15; top: -80px; right: -80px; }
-.auth-blob2 { width: 280px; height: 280px; background: var(--blue); opacity: .1; bottom: -60px; left: -60px; }
+.auth-left-blob { position: absolute; border-radius: 50%; filter: blur(80px); }
+.auth-blob1 { width: 350px; height: 350px; background: var(--accent); opacity: .08; top: -80px; right: -80px; }
+.auth-blob2 { width: 280px; height: 280px; background: var(--accent); opacity: .05; bottom: -60px; left: -60px; }
 .auth-brand { position: absolute; top: 36px; left: 48px; display: flex; align-items: center; gap: 10px; }
-.auth-brand-icon { width: 38px; height: 38px; background: var(--a500); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-.auth-brand-name { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1.3rem; color: #fff; }
+.auth-brand-icon { width: 38px; height: 38px; background: var(--accent); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.auth-brand-name { font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1.3rem; color: var(--text); }
 .auth-left-content { position: relative; z-index: 1; }
-.auth-quote { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 700; color: #fff; line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 14px; font-style: italic; }
-.auth-quote em { color: var(--a400); }
-.auth-left-sub { font-size: 13px; color: rgba(255,255,255,.4); font-weight: 300; line-height: 1.7; margin-bottom: 24px; }
+.auth-quote { font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 700; color: var(--text); line-height: 1.1; letter-spacing: -0.03em; margin-bottom: 14px; font-style: italic; }
+.auth-quote em { color: var(--accent); }
+.auth-left-sub { font-size: 13px; color: var(--text3); font-weight: 300; line-height: 1.7; margin-bottom: 24px; }
 .auth-stats { display: flex; gap: 28px; }
-.auth-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--a400); line-height: 1; }
-.auth-stat-label { font-size: 11px; color: rgba(255,255,255,.35); margin-top: 3px; }
-.auth-right { display: flex; align-items: center; justify-content: center; padding: 48px; background: var(--cream); }
+.auth-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--accent); line-height: 1; }
+.auth-stat-label { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.auth-right { display: flex; align-items: center; justify-content: center; padding: 48px; background: var(--bg); }
 .auth-box { width: 100%; max-width: 420px; }
-.auth-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--ink); margin-bottom: 6px; letter-spacing: -0.025em; }
-.auth-sub { font-size: 14px; color: var(--ink3); font-weight: 300; margin-bottom: 32px; }
-.auth-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--ink4); font-size: 12px; }
-.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
-.auth-toggle { text-align: center; margin-top: 20px; font-size: 13px; color: var(--ink3); }
-.auth-toggle a { color: var(--a700); font-weight: 500; cursor: pointer; }
+.auth-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -0.025em; }
+.auth-sub { font-size: 14px; color: var(--text3); font-weight: 300; margin-bottom: 32px; }
+.auth-toggle { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text3); }
+.auth-toggle a { color: var(--accent); font-weight: 500; cursor: pointer; }
 .auth-toggle a:hover { text-decoration: underline; }
-.back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink3); cursor: pointer; margin-bottom: 24px; transition: color .2s; }
-.back-link:hover { color: var(--a700); }
+.back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text3); cursor: pointer; margin-bottom: 24px; transition: color .2s; }
+.back-link:hover { color: var(--accent); }
+.demo-hint { margin-top: 20px; padding: 12px 14px; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); font-size: 12.5px; color: var(--text3); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.demo-hint strong { color: var(--accent); font-weight: 600; }
+.demo-fill { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; background: var(--accent); color: #fff; border: none; border-radius: 99px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .2s; }
+.demo-fill:hover { background: var(--accent-h); }
 @media (max-width: 900px) { .auth-left { display: none; } .auth-shell { grid-template-columns: 1fr; } }
 </style>

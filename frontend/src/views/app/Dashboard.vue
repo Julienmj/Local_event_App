@@ -2,25 +2,24 @@
   <div class="content-with-aside">
     <div class="content-main">
       <div class="page-header">
-        <h1 class="page-title">Good {{ greeting }}, {{ auth.user?.fullName?.split(' ')[0] || 'there' }} 👋</h1>
+        <h1 class="page-title">Good {{ greeting }}, {{ auth.user?.fullName?.split(' ')[0] || 'there' }}</h1>
         <p class="page-sub">Here's what's happening in your EventLocal world today.</p>
       </div>
 
       <!-- KPI Cards -->
       <div class="kpi-grid">
         <div v-for="kpi in kpis" :key="kpi.label" class="kpi-card">
-          <div class="kpi-icon">{{ kpi.icon }}</div>
+          <div class="kpi-icon"><i :class="['ph', kpi.icon]"></i></div>
           <div class="kpi-num">{{ kpi.value }}</div>
           <div class="kpi-label">{{ kpi.label }}</div>
           <div class="kpi-trend" :class="kpi.up ? 'trend-up' : 'trend-dn'">
-            {{ kpi.up ? '↑' : '↓' }} {{ kpi.trend }}
+            <i :class="kpi.up ? 'ph ph-trend-up' : 'ph ph-trend-down'"></i> {{ kpi.trend }}
           </div>
         </div>
       </div>
 
       <!-- Charts Row -->
       <div class="charts-row">
-        <!-- Category Donut -->
         <div class="chart-card">
           <div class="chart-card-header">
             <span class="chart-title">Events by Category</span>
@@ -42,7 +41,6 @@
           </div>
         </div>
 
-        <!-- Attendance Bar -->
         <div class="chart-card chart-card--wide">
           <div class="chart-card-header">
             <span class="chart-title">Attendance vs Capacity</span>
@@ -54,11 +52,11 @@
         </div>
       </div>
 
-      <!-- Fill Rate Sparklines -->
+      <!-- Fill Rate -->
       <div class="fill-row">
         <div class="fill-card" v-for="ev in fillEvents" :key="ev.id">
           <div class="fill-info">
-            <span class="fill-emoji">{{ ev.emoji }}</span>
+            <div class="fill-icon"><i class="ph ph-calendar-star"></i></div>
             <div>
               <div class="fill-title">{{ ev.title }}</div>
               <div class="fill-venue">{{ ev.venueName || ev.venue?.name }}</div>
@@ -66,10 +64,7 @@
           </div>
           <div class="fill-bar-wrap">
             <div class="fill-bar-track">
-              <div
-                class="fill-bar-fill"
-                :style="{ width: fillPct(ev) + '%', background: fillColor(ev) }"
-              ></div>
+              <div class="fill-bar-fill" :style="{ width: fillPct(ev) + '%', background: fillColor(ev) }"></div>
             </div>
             <span class="fill-pct" :style="{ color: fillColor(ev) }">{{ fillPct(ev) }}%</span>
           </div>
@@ -103,11 +98,11 @@
             {{ ev.price ? 'Paid' : 'Free' }}
           </span>
         </div>
-        <div v-if="!upcomingEvents.length" class="empty-state">No upcoming events found.</div>
+        <div v-if="!upcomingEvents.length" class="empty">No upcoming events found.</div>
       </div>
     </div>
 
-    <!-- Aside: Gemini AI -->
+    <!-- Aside: AI Copilot -->
     <aside class="aside-panel">
       <AiCopilot />
     </aside>
@@ -116,7 +111,6 @@
       v-if="selectedEvent"
       :event="selectedEvent"
       :is-saved="eventsStore.isSaved(selectedEvent.id)"
-      :reviews="[]"
       @close="selectedEvent = null"
       @save="eventsStore.toggleSave($event)"
       @registered="eventsStore.addNotification('Registration confirmed for ' + selectedEvent?.title)"
@@ -162,27 +156,24 @@ const upcomingEvents = computed(() => {
 })
 
 const kpis = computed(() => [
-  { 
-    icon: '📅', 
-    value: eventsStore.stats?.totalEvents || eventsStore.events.length, 
-    label: auth.isOrganizer ? 'Events Managed' : 'Events Near You', 
-    trend: '+12% this month', 
-    up: true 
+  {
+    icon: 'ph-calendar-blank',
+    value: eventsStore.stats?.totalEvents || eventsStore.events.length,
+    label: auth.isOrganizer ? 'Events Managed' : 'Events Near You',
+    trend: '+12% this month', up: true
   },
-  { 
-    icon: '🎟️', 
-    value: auth.isOrganizer 
-      ? (eventsStore.stats?.totalAttendees || eventsStore.events.reduce((s, e) => s + (e.attendeesCount || 0), 0)) 
-      : eventsStore.registrations.length, 
-    label: auth.isOrganizer ? 'Total Reach' : 'My Registrations', 
-    trend: '+8% this month', 
-    up: true 
+  {
+    icon: 'ph-ticket',
+    value: auth.isOrganizer
+      ? (eventsStore.stats?.totalAttendees || eventsStore.events.reduce((s, e) => s + (e.attendeesCount || 0), 0))
+      : eventsStore.registrations.length,
+    label: auth.isOrganizer ? 'Total Reach' : 'My Registrations',
+    trend: '+8% this month', up: true
   },
-  { icon: '🔖', value: eventsStore.savedIds.length, label: 'Saved Events', trend: 'Your wishlist', up: true },
-  { icon: '🔔', value: eventsStore.unreadCount, label: 'Notifications', trend: 'Unread', up: false },
+  { icon: 'ph-bookmark-simple', value: eventsStore.savedIds.length, label: 'Saved Events', trend: 'Your wishlist', up: true },
+  { icon: 'ph-bell', value: eventsStore.unreadCount, label: 'Notifications', trend: 'Unread', up: false },
 ])
 
-// --- Chart data ---
 const catData = computed(() => {
   const map = {}
   eventsStore.events.forEach(e => {
@@ -217,15 +208,9 @@ function fillPct(ev) {
 
 function fillColor(ev) {
   const p = fillPct(ev)
-  if (p >= 90) return '#F87171'
-  if (p >= 65) return '#F59E0B'
-  return '#4ADE80'
-}
-
-// --- Chart rendering ---
-const chartDefaults = {
-  color: 'rgba(255,255,255,0.5)',
-  borderColor: 'rgba(255,255,255,0.08)',
+  if (p >= 90) return '#ef4444'
+  if (p >= 65) return '#f59e0b'
+  return '#22c55e'
 }
 
 function buildDonut() {
@@ -235,24 +220,11 @@ function buildDonut() {
     type: 'doughnut',
     data: {
       labels: catData.value.map(c => c.name),
-      datasets: [{
-        data: catData.value.map(c => c.count),
-        backgroundColor: catData.value.map(c => c.color),
-        borderColor: '#1a1714',
-        borderWidth: 3,
-        hoverOffset: 6,
-      }]
+      datasets: [{ data: catData.value.map(c => c.count), backgroundColor: catData.value.map(c => c.color), borderColor: 'var(--surface)', borderWidth: 3, hoverOffset: 6 }]
     },
     options: {
       cutout: '72%',
-      plugins: { legend: { display: false }, tooltip: {
-        backgroundColor: '#1a1714',
-        borderColor: 'rgba(245,158,11,.3)',
-        borderWidth: 1,
-        titleColor: '#fff',
-        bodyColor: 'rgba(255,255,255,.6)',
-        callbacks: { label: ctx => ` ${ctx.parsed} events` }
-      }},
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: 'var(--surface2)', borderColor: 'rgba(245,158,11,.3)', borderWidth: 1, titleColor: '#fff', bodyColor: 'rgba(255,255,255,.6)', callbacks: { label: ctx => ` ${ctx.parsed} events` } } },
       animation: { animateRotate: true, duration: 800 },
     }
   })
@@ -267,47 +239,19 @@ function buildBar() {
     data: {
       labels,
       datasets: [
-        {
-          label: 'Attendees',
-          data: attendanceData.value.map(e => e.attendeesCount || 0),
-          backgroundColor: 'rgba(245,158,11,0.85)',
-          borderRadius: 6,
-          borderSkipped: false,
-        },
-        {
-          label: 'Capacity',
-          data: attendanceData.value.map(e => e.capacity || 0),
-          backgroundColor: 'rgba(255,255,255,0.07)',
-          borderRadius: 6,
-          borderSkipped: false,
-        }
+        { label: 'Attendees', data: attendanceData.value.map(e => e.attendeesCount || 0), backgroundColor: 'rgba(245,158,11,0.85)', borderRadius: 6, borderSkipped: false },
+        { label: 'Capacity', data: attendanceData.value.map(e => e.capacity || 0), backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 6, borderSkipped: false }
       ]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: {
-          labels: { color: 'rgba(255,255,255,0.45)', font: { size: 11 }, boxWidth: 10, padding: 14 }
-        },
-        tooltip: {
-          backgroundColor: '#1a1714',
-          borderColor: 'rgba(245,158,11,.3)',
-          borderWidth: 1,
-          titleColor: '#fff',
-          bodyColor: 'rgba(255,255,255,.6)',
-        }
+        legend: { labels: { color: 'rgba(255,255,255,0.45)', font: { size: 11 }, boxWidth: 10, padding: 14 } },
+        tooltip: { backgroundColor: 'var(--surface2)', borderColor: 'rgba(245,158,11,.3)', borderWidth: 1, titleColor: '#fff', bodyColor: 'rgba(255,255,255,.6)' }
       },
       scales: {
-        x: {
-          ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
-          grid: { color: 'rgba(255,255,255,0.04)' },
-        },
-        y: {
-          ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } },
-          grid: { color: 'rgba(255,255,255,0.06)' },
-          beginAtZero: true,
-        }
+        x: { ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.06)' }, beginAtZero: true }
       }
     }
   })
@@ -331,68 +275,48 @@ function formatTime(d, t) {
 .content-main { flex: 1; overflow-y: auto; padding: 28px 30px; }
 .aside-panel { width: 300px; border-left: 1px solid var(--border); background: var(--surface); overflow-y: auto; padding: 20px 18px; display: flex; flex-direction: column; gap: 18px; flex-shrink: 0; }
 .page-header { margin-bottom: 26px; }
-.page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); margin-bottom: 4px; letter-spacing: -0.025em; }
-.page-sub { font-size: 13px; color: var(--ink3); font-weight: 300; }
+.page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom: 4px; letter-spacing: -0.025em; }
+.page-sub { font-size: 13px; color: var(--text3); font-weight: 300; }
 
-/* KPI */
-.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-.kpi-card { background: var(--surface); border-radius: var(--radius-lg); padding: 18px; border: 1px solid var(--border); position: relative; overflow: hidden; transition: box-shadow .2s; }
-.kpi-card:hover { box-shadow: var(--shadow); }
-.kpi-card::before { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--a400), var(--a200)); }
-.kpi-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--a100); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 12px; }
-.kpi-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--ink); line-height: 1; margin-bottom: 3px; }
-.kpi-label { font-size: 12px; color: var(--ink3); }
-.kpi-trend { font-size: 11px; margin-top: 6px; display: flex; align-items: center; gap: 3px; font-weight: 500; }
-.trend-up { color: var(--teal); } .trend-dn { color: var(--red); }
-
-/* Charts row */
 .charts-row { display: grid; grid-template-columns: 220px 1fr; gap: 14px; margin-bottom: 14px; }
 .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; }
 .chart-card--wide { display: flex; flex-direction: column; }
 .chart-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.chart-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--ink); }
-.chart-badge { font-size: 10px; background: var(--a100); color: var(--a600); padding: 2px 8px; border-radius: 99px; font-weight: 600; }
-
-/* Donut */
+.chart-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 700; color: var(--text); }
+.chart-badge { font-size: 10px; background: var(--accent-l); color: var(--accent); padding: 2px 8px; border-radius: 99px; font-weight: 600; }
 .donut-wrap { position: relative; width: 130px; height: 130px; margin: 0 auto 14px; }
 .donut-wrap canvas { width: 100% !important; height: 100% !important; }
 .donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
-.donut-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--ink); line-height: 1; }
-.donut-sub { font-size: 9px; color: var(--ink3); text-align: center; max-width: 60px; line-height: 1.3; margin-top: 2px; }
+.donut-num { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 700; color: var(--text); line-height: 1; }
+.donut-sub { font-size: 9px; color: var(--text3); text-align: center; max-width: 60px; line-height: 1.3; margin-top: 2px; }
 .donut-legend { display: flex; flex-direction: column; gap: 5px; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
 .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.legend-label { flex: 1; color: var(--ink3); }
-.legend-val { font-weight: 600; color: var(--ink); }
-
-/* Bar */
+.legend-label { flex: 1; color: var(--text3); }
+.legend-val { font-weight: 600; color: var(--text); }
 .bar-wrap { flex: 1; min-height: 180px; position: relative; }
 .bar-wrap canvas { width: 100% !important; height: 100% !important; }
 
-/* Fill rate row */
 .fill-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 4px; }
 .fill-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; }
 .fill-info { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.fill-emoji { font-size: 1.3rem; }
-.fill-title { font-size: 12px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
-.fill-venue { font-size: 10.5px; color: var(--ink3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.fill-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--accent-l); display: flex; align-items: center; justify-content: center; font-size: 1rem; color: var(--accent); flex-shrink: 0; }
+.fill-title { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
+.fill-venue { font-size: 10.5px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 110px; }
 .fill-bar-wrap { display: flex; align-items: center; gap: 8px; }
-.fill-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,.08); border-radius: 99px; overflow: hidden; }
+.fill-bar-track { flex: 1; height: 5px; background: var(--border2); border-radius: 99px; overflow: hidden; }
 .fill-bar-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
 .fill-pct { font-size: 11px; font-weight: 600; min-width: 32px; text-align: right; }
 
-/* Upcoming */
-.section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.section-label { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 700; color: var(--ink); }
 .upcoming-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
 .upcoming-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all .2s; }
-.upcoming-item:hover { border-color: var(--a300); box-shadow: var(--shadow); }
-.date-block { width: 44px; height: 46px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; background: var(--a100); }
-.date-mon { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--a700); }
-.date-day { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; line-height: 1; color: var(--ink); }
+.upcoming-item:hover { border-color: var(--accent); background: var(--surface2); }
+.date-block { width: 44px; height: 46px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; background: var(--accent-l); }
+.date-mon { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+.date-day { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; line-height: 1; color: var(--text); }
 .upcoming-info { flex: 1; min-width: 0; }
-.upcoming-title { font-weight: 500; font-size: 13.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
-.upcoming-sub { font-size: 11.5px; color: var(--ink3); }
+.upcoming-title { font-weight: 500; font-size: 13.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+.upcoming-sub { font-size: 11.5px; color: var(--text3); }
 
 @media (max-width: 1100px) { .fill-row { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 900px) { .kpi-grid { grid-template-columns: 1fr 1fr; } .charts-row { grid-template-columns: 1fr; } .aside-panel { display: none; } .fill-row { grid-template-columns: 1fr 1fr; } }

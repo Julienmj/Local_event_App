@@ -81,7 +81,7 @@
               @change="handleFileUpload"
             />
             <div v-if="!form.imageUrl" class="upload-placeholder">
-              <span>📤</span>
+              <i class="ph ph-upload-simple" style="font-size:2rem;color:var(--text3)"></i>
               <p>Click to upload event poster</p>
             </div>
             <div v-else class="upload-preview">
@@ -169,8 +169,8 @@ async function handleSubmit() {
       return
     }
 
-    if (form.imageUrl.length > 500) {
-      error.value = 'The uploaded image is too large for the server (limit: 500 chars). Please use a direct Image URL instead.'
+    if (form.imageUrl.startsWith('data:') && form.imageUrl.length > 2000000) {
+      error.value = 'Image file is too large. Please use a smaller image or paste a URL instead.'
       return
     }
 

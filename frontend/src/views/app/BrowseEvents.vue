@@ -53,7 +53,6 @@
       v-if="selectedEvent"
       :event="selectedEvent"
       :is-saved="eventsStore.isSaved(selectedEvent.id)"
-      :reviews="[]"
       @close="selectedEvent = null"
       @save="eventsStore.toggleSave($event)"
       @registered="eventsStore.addNotification('Registration confirmed for ' + selectedEvent?.title)"

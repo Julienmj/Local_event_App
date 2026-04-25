@@ -25,11 +25,11 @@ const tickerItems = [
 
 <style scoped>
 .ticker {
-  background: var(--amber-500);
+  background: var(--surface);
   padding: 12px 0;
   overflow: hidden;
-  border-top: 1px solid var(--amber-400);
-  border-bottom: 1px solid var(--amber-400);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 .ticker-track {
   display: flex;
@@ -40,7 +40,7 @@ const tickerItems = [
   font-family: 'Cormorant Garamond', serif;
   font-size: 1.05rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text2);
   padding: 0 32px;
   display: flex;
   align-items: center;
@@ -50,7 +50,7 @@ const tickerItems = [
 }
 .ticker-dot {
   width: 5px; height: 5px;
-  background: rgba(255,255,255,0.5);
+  background: var(--accent);
   border-radius: 50%;
   flex-shrink: 0;
 }

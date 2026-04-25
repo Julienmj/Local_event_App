@@ -8,16 +8,16 @@
     <div class="profile-grid">
       <div class="profile-card">
         <div class="profile-av-large">{{ auth.initials }}</div>
-        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">{{ auth.user?.Name }}</h3>
-        <p style="font-size:13px;color:var(--ink3);margin-bottom:4px">{{ auth.user?.Email }}</p>
-        <span class="pill pill-upcoming">{{ auth.user?.Role }}</span>
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;margin-bottom:4px">{{ auth.user?.fullName }}</h3>
+        <p style="font-size:13px;color:var(--ink3);margin-bottom:4px">{{ auth.user?.email }}</p>
+        <span class="pill pill-upcoming">{{ auth.user?.role }}</span>
       </div>
 
       <div class="profile-card">
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)">
           Edit Profile
         </div>
-        <div v-if="saved" class="success-msg">Profile updated!</div>
+        <div v-if="saved" class="success-msg">Profile updated successfully!</div>
         <div class="form-group">
           <label class="form-label">Full Name</label>
           <input v-model="form.name" class="form-input" type="text"/>
@@ -47,6 +47,7 @@ import { useToast } from '@/composables/useToast'
 const auth = useAuthStore()
 const { show } = useToast()
 const loading = ref(false)
+const saved = ref(false)
 
 const form = reactive({
   name: auth.user?.fullName || auth.user?.Name || '',
@@ -56,6 +57,7 @@ const form = reactive({
 
 async function saveProfile() {
   loading.value = true
+  saved.value = false
   try {
     const id = auth.user?.id || auth.user?.userID
     await auth.updateUser(id, {
@@ -63,7 +65,9 @@ async function saveProfile() {
       email: form.email,
       role: form.role
     })
+    saved.value = true
     show('Profile updated successfully!', '👤')
+    setTimeout(() => { saved.value = false }, 3000)
   } catch (e) {
     show(e.message || 'Failed to update profile.', '⚠️')
   } finally {

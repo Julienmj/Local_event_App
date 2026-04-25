@@ -13,15 +13,15 @@
     <div class="cat-grid">
       <div v-for="c in eventsStore.categories" :key="c.id" class="cat-card">
         <div class="cat-info">
-          <span class="cat-icon">{{ c.icon || '🏷️' }}</span>
+          <div class="cat-icon"><i class="ph ph-tag"></i></div>
           <div>
             <div class="cat-name">{{ c.name || c.CategoryName }}</div>
             <div class="cat-desc">{{ c.description || 'Event category' }}</div>
           </div>
         </div>
         <div class="cat-actions">
-          <button class="btn-icon" @click="openEdit(c)">✏️</button>
-          <button class="btn-icon" @click="handleDelete(c.id)">🗑️</button>
+          <button class="btn-icon" @click="openEdit(c)"><i class="ph ph-pencil-simple"></i></button>
+          <button class="btn-icon danger" @click="handleDelete(c.id)"><i class="ph ph-trash"></i></button>
         </div>
       </div>
     </div>
@@ -33,6 +33,10 @@
         <div class="form-group">
           <label class="form-label">Name</label>
           <input v-model="modal.form.name" class="form-input" placeholder="e.g. Workshop"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Icon (emoji)</label>
+          <input v-model="modal.form.icon" class="form-input" placeholder="e.g. 🎭"/>
         </div>
         <div class="form-group">
           <label class="form-label">Description</label>
@@ -67,13 +71,13 @@ const modal = reactive({
 
 function openCreate() {
   modal.mode = 'create'
-  modal.form = { id: null, name: '', description: '' }
+  modal.form = { id: null, name: '', icon: '', description: '' }
   modal.show = true
 }
 
 function openEdit(c) {
   modal.mode = 'edit'
-  modal.form = { id: c.id, name: c.name || c.CategoryName, description: c.description || '' }
+  modal.form = { id: c.id, name: c.name || c.CategoryName, icon: c.icon || '', description: c.description || '' }
   modal.show = true
 }
 
@@ -83,10 +87,10 @@ async function handleSubmit() {
   try {
     if (modal.mode === 'create') {
       await eventsStore.createCategory(modal.form)
-      show('Category created!', '🏷️')
+      show('Category created!', '✅')
     } else {
       await eventsStore.updateCategory(modal.form.id, modal.form)
-      show('Category updated!', '🏷️')
+      show('Category updated!', '✅')
     }
     modal.show = false
   } catch (e) {
@@ -100,7 +104,7 @@ async function handleDelete(id) {
   if (!confirm('Delete this category?')) return
   try {
     await eventsStore.deleteCategory(id)
-    show('Category deleted', '🗑️')
+    show('Category deleted', '✅')
   } catch (e) {
     show(e.message || 'Error deleting category', '⚠️')
   }
@@ -112,10 +116,11 @@ async function handleDelete(id) {
 .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin-top: 20px; }
 .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; display: flex; justify-content: space-between; align-items: center; }
 .cat-info { display: flex; align-items: center; gap: 12px; }
-.cat-icon { font-size: 1.4rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--cream2); border-radius: 12px; }
+.cat-icon { font-size: 1.1rem; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--accent-l); border-radius: 12px; color: var(--accent); }
 .cat-name { font-weight: 700; font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--ink); }
 .cat-desc { font-size: 12px; color: var(--ink3); margin-top: 2px; }
 .cat-actions { display: flex; gap: 6px; }
-.btn-icon { background: none; border: none; cursor: pointer; font-size: 1rem; padding: 4px; border-radius: 4px; }
-.btn-icon:hover { background: var(--cream2); }
+.btn-icon { width: 32px; height: 32px; background: var(--surface2); border: 1px solid var(--border); cursor: pointer; font-size: 15px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; color: var(--text2); transition: all .2s; }
+.btn-icon:hover { background: var(--accent-l); color: var(--accent); border-color: var(--accent); }
+.btn-icon.danger:hover { background: var(--err-bg); color: var(--err); border-color: var(--err); }
 </style>

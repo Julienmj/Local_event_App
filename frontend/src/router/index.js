@@ -12,11 +12,11 @@ const routes = [
       { path: 'dashboard', component: () => import('@/views/app/Dashboard.vue') },
       { path: 'events', component: () => import('@/views/app/BrowseEvents.vue') },
       { path: 'saved', component: () => import('@/views/app/SavedEvents.vue') },
-      { path: 'myevents', component: () => import('@/views/app/MyEvents.vue') },
-      { path: 'create', component: () => import('@/views/app/CreateEvent.vue') },
-      { path: 'analytics', component: () => import('@/views/app/Analytics.vue') },
-      { path: 'venues', component: () => import('@/views/app/Venues.vue') },
-      { path: 'categories', component: () => import('@/views/app/Categories.vue') },
+      { path: 'myevents', component: () => import('@/views/app/MyEvents.vue'), meta: { requiresOrganizer: true } },
+      { path: 'create', component: () => import('@/views/app/CreateEvent.vue'), meta: { requiresOrganizer: true } },
+      { path: 'analytics', component: () => import('@/views/app/Analytics.vue'), meta: { requiresOrganizer: true } },
+      { path: 'venues', component: () => import('@/views/app/Venues.vue'), meta: { requiresOrganizer: true } },
+      { path: 'categories', component: () => import('@/views/app/Categories.vue'), meta: { requiresOrganizer: true } },
       { path: 'notifications', component: () => import('@/views/app/Notifications.vue') },
       { path: 'profile', component: () => import('@/views/app/Profile.vue') },
     ],
@@ -32,8 +32,9 @@ const router = createRouter({
 
 router.beforeEach((to) => {
   const auth = useAuthStore()
-  if (auth.isLoggedIn && to.path === '/') return '/app'
+  if (auth.isLoggedIn && (to.path === '/' || to.path === '/auth')) return '/app/dashboard'
   if (to.meta.requiresAuth && !auth.isLoggedIn) return '/auth'
+  if (to.meta.requiresOrganizer && !auth.isOrganizer) return '/app/events'
 })
 
 export default router
