@@ -10,8 +10,8 @@ export const useAuthStore = defineStore('auth', () => {
   const isOrganizer = computed(() => {
     const r = user.value?.role
     if (!r) return false
-    if (Array.isArray(r)) return r.some(i => i.toLowerCase() === 'organizer')
-    return r.toLowerCase() === 'organizer'
+    if (Array.isArray(r)) return r.some(i => ['organizer', 'admin'].includes(i.toLowerCase()))
+    return ['organizer', 'admin'].includes(r.toLowerCase())
   })
   const initials = computed(() => {
     if (!user.value?.fullName) return 'U'
@@ -140,9 +140,17 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
   }
 
+  function loginDemo() {
+    const demoUser = { id: 'demo-001', email: 'demo@gmail.com', fullName: 'Demo User', role: 'Organizer' }
+    user.value = demoUser
+    token.value = 'demo-token'
+    localStorage.setItem('user', JSON.stringify(demoUser))
+    localStorage.setItem('token', 'demo-token')
+  }
+
   return { 
     user, token, isLoggedIn, isOrganizer, initials, 
-    login, register, logout, 
+    login, register, logout, loginDemo,
     forgotPassword, resetPassword, 
     getUsers, getUserById, updateUser, deleteUser 
   }

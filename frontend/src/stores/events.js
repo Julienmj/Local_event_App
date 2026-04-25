@@ -56,7 +56,10 @@ export const useEventsStore = defineStore('events', () => {
         categories: cats.slice(0, 3),
         venues: vens.slice(0, 3)
       })
-      events.value = evts.map(enrichEvent)
+      events.value = evts.map(enrichEvent).map(e => ({
+        ...e,
+        imageUrl: e.imageUrl || `https://picsum.photos/seed/${e.id || e.eventID}/400/300.jpg`
+      }))
       categories.value = cats.map(c => ({
         id: c.id || c.categoryID || c.CategoryID,
         name: c.name || c.categoryName || c.CategoryName,
@@ -73,7 +76,8 @@ export const useEventsStore = defineStore('events', () => {
         id: e.EventID, title: e.Title, description: e.Description,
         eventDate: e.EventDate + 'T' + e.EventTime, status: e.Status,
         categoryName: e.CategoryName, venueName: e.VenueName,
-        price: e.Price, capacity: e.Capacity, attendeesCount: e.AttendeesCount
+        price: e.Price, capacity: e.Capacity, attendeesCount: e.AttendeesCount,
+        imageUrl: `https://picsum.photos/seed/${e.EventID}/400/300.jpg`
       })).map(enrichEvent)
       categories.value = DEMO_CATS.map(c => ({ id: c.CategoryID || c.id, name: c.CategoryName || c.name, icon: c.icon }))
       venues.value = DEMO_VENUES.map(v => ({ id: v.VenueID || v.id, name: v.VenueName || v.name, address: v.Address || v.address }))

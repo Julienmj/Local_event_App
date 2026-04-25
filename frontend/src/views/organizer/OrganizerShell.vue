@@ -8,20 +8,20 @@
           <input v-model="eventsStore.searchQ" type="text" placeholder="Search events…" />
         </div>
         <div class="topbar-actions">
-          <RouterLink to="/app/notifications" class="icon-btn" title="Notifications">
+          <RouterLink to="/organizer/notifications" class="icon-btn" title="Notifications">
             <i class="ph ph-bell"></i>
             <span v-if="eventsStore.unreadCount > 0" class="notif-badge">{{ eventsStore.unreadCount }}</span>
           </RouterLink>
           <RouterLink to="/" class="btn btn-ghost" style="font-size:13px;padding:7px 16px">
             <i class="ph ph-arrow-left"></i> Landing
           </RouterLink>
-          <RouterLink v-if="auth.isOrganizer" to="/app/create" class="btn btn-amber" style="padding:8px 18px;font-size:13px">
+          <RouterLink to="/organizer/create" class="btn btn-amber" style="padding:8px 18px;font-size:13px">
             <i class="ph ph-plus"></i> Create Event
           </RouterLink>
-          <RouterLink to="/app/profile" class="user-chip">
+          <RouterLink to="/organizer/profile" class="user-chip">
             <div class="user-chip-av">{{ auth.initials }}</div>
             <span class="user-chip-name">{{ auth.user?.fullName?.split(' ')[0] }}</span>
-            <i class="ph ph-caret-down" style="font-size:11px;color:var(--ink4)"></i>
+            <i class="ph ph-crown" style="font-size:11px;color:var(--accent)" title="Admin"></i>
           </RouterLink>
         </div>
       </header>

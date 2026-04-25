@@ -2,8 +2,8 @@
   <div class="content-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:26px">
       <div>
-        <h1 class="page-title">My Events</h1>
-        <p class="page-sub">Events you've created and manage</p>
+        <h1 class="page-title">All Events</h1>
+        <p class="page-sub">Manage all events in the system</p>
       </div>
       <RouterLink to="/app/create" class="btn btn-amber">+ Create Event</RouterLink>
     </div>
@@ -156,8 +156,8 @@ async function saveEdit() {
 }
 
 const myEvents = computed(() => {
-  const uid = auth.user?.id || auth.user?.userID
-  return eventsStore.events.filter(e => e.organizerID === uid)
+  // Admin sees all events, not just their own
+  return eventsStore.events
 })
 
 function formatDate(d) {

@@ -2,7 +2,7 @@
   <nav :class="{ scrolled: scrolled }">
     <div class="nav-inner">
       <a class="nav-logo" href="#">
-        <div class="nav-logo-icon">📍</div>
+        <div class="nav-logo-icon"><i class="ph-bold ph-map-pin" style="color:#fff;font-size:17px"></i></div>
         <span class="nav-logo-name">EventLocal</span>
       </a>
       <div class="nav-links">
@@ -50,7 +50,7 @@ nav {
 .nav-logo-icon {
   width: 40px;
   height: 40px;
-  background: var(--amber-500);
+  background: var(--accent);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -63,7 +63,7 @@ nav {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
   font-size: 1.4rem;
-  color: var(--ink);
+  color: var(--text);
   letter-spacing: -0.02em;
 }
 .nav-links {
@@ -77,14 +77,14 @@ nav {
   border-radius: 99px;
   font-size: 14px;
   font-weight: 400;
-  color: var(--ink2);
+  color: var(--text2);
   text-decoration: none;
   transition: all 0.2s;
   letter-spacing: 0.01em;
 }
 .nav-links a:hover {
-  background: var(--amber-100);
-  color: var(--amber-800);
+  background: var(--accent-xl);
+  color: var(--accent);
 }
 .nav-cta {
   margin-left: auto;
@@ -93,7 +93,7 @@ nav {
   gap: 10px;
 }
 nav.scrolled {
-  background: rgba(255, 253, 245, 0.88);
+  background: rgba(15,14,23,0.92);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
 }

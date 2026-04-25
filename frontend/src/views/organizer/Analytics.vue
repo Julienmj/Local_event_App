@@ -1,6 +1,5 @@
 <template>
-  <div class="content-with-aside">
-    <div class="content-main">
+  <div class="content-main">
       <div class="page-header">
         <h1 class="page-title">Analytics</h1>
         <p class="page-sub">Performance overview for your events</p>
@@ -34,18 +33,12 @@
           </div>
         </div>
       </div>
-    </div>
-
-    <aside class="aside-panel">
-      <AiCopilot />
-    </aside>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
 import { useEventsStore } from '@/stores/events'
-import AiCopilot from '@/components/AiCopilot.vue'
 
 const eventsStore = useEventsStore()
 
@@ -75,9 +68,7 @@ const categoryBreakdown = computed(() => {
 </script>
 
 <style scoped>
-.content-with-aside { display: flex; flex: 1; overflow: hidden; }
 .content-main { flex: 1; overflow-y: auto; padding: 28px 30px; }
-.aside-panel { width: 300px; border-left: 1px solid var(--border); background: var(--surface); overflow-y: auto; padding: 20px 18px; flex-shrink: 0; }
 .page-header { margin-bottom: 26px; }
 .page-title { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
 .page-sub { font-size: 13px; color: var(--text3); font-weight: 300; }

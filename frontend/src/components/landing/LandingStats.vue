@@ -69,10 +69,7 @@ function initAnim() {
 </script>
 
 <style scoped>
-.stats-band {
-  background: var(--ink);
-  padding: 64px 6%;
-}
+.stats-band { background: var(--surface); padding: 64px 6%; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .stats-inner {
   max-width: 1320px;
   margin: 0 auto;
@@ -85,21 +82,8 @@ function initAnim() {
   border-right: 1px solid rgba(255,255,255,0.06);
 }
 .stat-item:first-child { padding-left: 0; }
-.stat-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 3rem;
-  font-weight: 700;
-  color: var(--amber-400);
-  line-height: 1;
-  margin-bottom: 6px;
-  font-style: italic;
-}
-.stat-label {
-  font-size: 13px;
-  color: rgba(255,255,255,0.45);
-  font-weight: 300;
-  letter-spacing: 0.03em;
-}
+.stat-num { font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 6px; font-style: italic; }
+.stat-label { font-size: 13px; color: var(--text3); font-weight: 300; letter-spacing: 0.03em; }
 .reveal {
   opacity: 0;
   transform: translateY(36px);

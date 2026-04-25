@@ -73,8 +73,8 @@
 
       <!-- Upcoming Events -->
       <div class="section-row" style="margin-top:24px">
-        <div class="section-label">{{ auth.isOrganizer ? 'My Managed Events' : 'Upcoming Events' }}</div>
-        <RouterLink :to="auth.isOrganizer ? '/app/myevents' : '/app/events'" class="btn btn-ghost" style="font-size:12px;padding:6px 14px">View all</RouterLink>
+        <div class="section-label">All Events</div>
+        <RouterLink :to="'/organizer/events'" class="btn btn-ghost" style="font-size:12px;padding:6px 14px">View all</RouterLink>
       </div>
       <div class="upcoming-list">
         <div
@@ -83,29 +83,34 @@
           class="upcoming-item"
           @click="openModal(ev)"
         >
-          <div class="date-block">
-            <div class="date-mon">{{ formatMon(ev.eventDate) }}</div>
-            <div class="date-day">{{ formatDay(ev.eventDate) }}</div>
+          <div class="upcoming-image">
+            <img v-if="ev.imageUrl" :src="ev.imageUrl" :alt="ev.title" class="upcoming-img" />
+            <div v-else class="upcoming-img-placeholder">
+              <i class="ph ph-calendar-star"></i>
+            </div>
           </div>
-          <div class="upcoming-info">
-            <div class="upcoming-title">{{ ev.title }}</div>
-            <div class="upcoming-sub">{{ ev.venue?.name || ev.venueName }} · {{ formatTime(ev.eventDate, ev.eventTime) }}</div>
+          <div class="upcoming-content">
+            <div class="date-block">
+              <div class="date-mon">{{ formatMon(ev.eventDate) }}</div>
+              <div class="date-day">{{ formatDay(ev.eventDate) }}</div>
+            </div>
+            <div class="upcoming-info">
+              <div class="upcoming-title">{{ ev.title }}</div>
+              <div class="upcoming-sub">{{ ev.venue?.name || ev.venueName }} · {{ formatTime(ev.eventDate, ev.eventTime) }}</div>
+            </div>
+            <div class="upcoming-pills">
+              <span class="pill" :class="ev.status === 'live' ? 'pill-live' : 'pill-upcoming'">
+                {{ ev.status === 'live' ? 'Live' : 'Upcoming' }}
+              </span>
+              <span class="pill" :class="ev.price ? 'pill-paid' : 'pill-free'">
+                {{ ev.price ? 'Paid' : 'Free' }}
+              </span>
+            </div>
           </div>
-          <span class="pill" :class="ev.status === 'live' ? 'pill-live' : 'pill-upcoming'">
-            {{ ev.status === 'live' ? 'Live' : 'Upcoming' }}
-          </span>
-          <span class="pill" :class="ev.price ? 'pill-paid' : 'pill-free'">
-            {{ ev.price ? 'Paid' : 'Free' }}
-          </span>
         </div>
         <div v-if="!upcomingEvents.length" class="empty">No upcoming events found.</div>
       </div>
     </div>
-
-    <!-- Aside: AI Copilot -->
-    <aside class="aside-panel">
-      <AiCopilot />
-    </aside>
 
     <EventModal
       v-if="selectedEvent"
@@ -123,7 +128,6 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { Chart, ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController } from 'chart.js'
 import { useAuthStore } from '@/stores/auth'
 import { useEventsStore } from '@/stores/events'
-import AiCopilot from '@/components/AiCopilot.vue'
 import EventModal from '@/components/EventModal.vue'
 
 Chart.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, DoughnutController, BarController)
@@ -148,10 +152,7 @@ const greeting = computed(() => {
 })
 
 const upcomingEvents = computed(() => {
-  if (auth.isOrganizer) {
-    const uid = auth.user?.id || auth.user?.userID
-    return eventsStore.events.filter(e => e.organizerID === uid).slice(0, 5)
-  }
+  // Admin sees all events, not just their own
   return eventsStore.events.slice(0, 5)
 })
 
@@ -308,17 +309,32 @@ function formatTime(d, t) {
 .fill-bar-fill { height: 100%; border-radius: 99px; transition: width .6s ease; }
 .fill-pct { font-size: 11px; font-weight: 600; min-width: 32px; text-align: right; }
 
-.upcoming-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
-.upcoming-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all .2s; }
-.upcoming-item:hover { border-color: var(--accent); background: var(--surface2); }
+.upcoming-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.upcoming-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; cursor: pointer; transition: all .2s; display: flex; }
+.upcoming-item:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.upcoming-image { width: 120px; height: 100px; flex-shrink: 0; position: relative; overflow: hidden; }
+.upcoming-img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.upcoming-img-placeholder { width: 100%; height: 100%; background: var(--accent-l); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--accent); }
+.upcoming-content { flex: 1; display: flex; padding: 12px 16px; gap: 12px; }
 .date-block { width: 44px; height: 46px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; background: var(--accent-l); }
 .date-mon { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
 .date-day { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 700; line-height: 1; color: var(--text); }
 .upcoming-info { flex: 1; min-width: 0; }
-.upcoming-title { font-weight: 500; font-size: 13.5px; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
-.upcoming-sub { font-size: 11.5px; color: var(--text3); }
+.upcoming-title { font-weight: 500; font-size: 13.5px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+.upcoming-sub { font-size: 11.5px; color: var(--text3); margin-bottom: 8px; }
+.upcoming-pills { display: flex; gap: 6px; flex-wrap: wrap; }
 
-@media (max-width: 1100px) { .fill-row { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 900px) { .kpi-grid { grid-template-columns: 1fr 1fr; } .charts-row { grid-template-columns: 1fr; } .aside-panel { display: none; } .fill-row { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 560px) { .fill-row { grid-template-columns: 1fr; } }
+.pill { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; }
+.pill-live { background: var(--green-l); color: var(--green); }
+.pill-upcoming { background: var(--accent-l); color: var(--accent); }
+.pill-paid { background: var(--blue-l); color: var(--blue); }
+.pill-free { background: var(--surface2); color: var(--text3); }
+
+.empty { text-align: center; color: var(--text3); font-size: 13px; padding: 20px; }
+
+@media (max-width: 768px) {
+  .upcoming-item { flex-direction: column; }
+  .upcoming-image { width: 100%; height: 160px; }
+  .upcoming-content { flex-direction: column; gap: 8px; }
+}
 </style>

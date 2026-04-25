@@ -28,10 +28,8 @@
         </div>
         <div class="form-group">
           <label class="form-label">Role</label>
-          <select v-model="form.role" class="form-input">
-            <option value="Attendee">Attendee</option>
-            <option value="Organizer">Organizer</option>
-          </select>
+          <input v-model="form.role" class="form-input" type="text" readonly />
+          <p style="font-size:12px;color:var(--text3);margin-top:6px">Your role cannot be changed. Contact admin for role changes.</p>
         </div>
         <button class="btn btn-amber" @click="saveProfile">Save Changes</button>
       </div>
@@ -62,8 +60,7 @@ async function saveProfile() {
     const id = auth.user?.id || auth.user?.userID
     await auth.updateUser(id, {
       fullName: form.name,
-      email: form.email,
-      role: form.role
+      email: form.email
     })
     saved.value = true
     show('Profile updated successfully!', '👤')
