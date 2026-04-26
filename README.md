@@ -28,8 +28,12 @@ Local event organizers often struggle with:
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Vue.js |
-| Backend | C# .NET |
+| Frontend | Vue.js 3 + Vite |
+| Backend | C# .NET 8 + ASP.NET Core |
+| Database | PostgreSQL |
+| Authentication | JWT (JSON Web Tokens) |
+| State Management | Pinia |
+| Deployment | Vercel (Frontend) + Render (Backend) |
 | Version Control | Git & GitHub |
 
 ---
@@ -37,7 +41,8 @@ Local event organizers often struggle with:
 ## Branch Strategy
 
 ```
-main
+main                 → production-ready code (merged from frontend-b)
+├── frontend-b       → deployed frontend (Vercel)
 ├── FRONT-END        → stable frontend code (Vue.js)
 ├── BACK-END         → stable backend code (C# .NET)
 ├── Mugishajulien26967-workspace      (Julien)
@@ -64,7 +69,7 @@ git checkout yourname+id-workspace
 ### 3. Daily workflow
 ```bash
 # Sync before starting work
-git pull origin FRONT-END    # frontend team
+git pull origin frontend-b   # frontend team (deployed branch)
 git pull origin BACK-END     # backend team
 
 # After making changes
@@ -75,9 +80,14 @@ git push origin yourname+id-workspace
 
 ### 4. When a task is done
 - Go to GitHub → open a **Pull Request**
-- Target branch: `FRONT-END` (frontend team) or `BACK-END` (backend team)
-- **Never push directly to `main`, `FRONT-END`, or `BACK-END`**
+- Target branch: `FRONT-END` or `frontend-b` (frontend team) or `BACK-END` (backend team)
+- **Never push directly to `main`, `frontend-b`, `FRONT-END`, or `BACK-END`**
 - Wait for your lead to review and merge
+
+### 5. Deployment
+- **Frontend**: Vercel auto-deploys from `frontend-b` branch
+- **Backend**: Render deploys from `BACK-END` branch
+- Merges to these branches trigger automatic deployments
 
 ---
 
@@ -178,9 +188,61 @@ API runs on http://localhost:5000 — Swagger UI available at http://localhost:5
 
 ---
 
-**Phase 1 Complete** — Project description, problem statement, and team formation established.  
-**Phase 2 Complete** — Project setup, branch strategy, and team workflow defined.  
-**Phase 3 In Progress** — Frontend and backend implementation underway.
+## API Endpoints (35+ endpoints)
+
+For complete API documentation, see [API_MIGRATION.md](frontend/API_MIGRATION.md) or visit the [Swagger UI](https://localeventorganizer.onrender.com/swagger).
+
+### Quick Reference
+
+**Authentication:**
+- `POST /api/v1/auth/register` - Register new user
+- `POST /api/v1/auth/login` - Login and get JWT token
+- `POST /api/v1/auth/forgot-password` - Request password reset
+- `POST /api/v1/auth/reset-password` - Reset password with token
+
+**Events:**
+- `GET /api/v1/events` - List all events
+- `POST /api/v1/events` - Create event (Organizer)
+- `GET /api/v1/events/{id}` - Get event details
+- `PUT /api/v1/events/{id}` - Update event
+- `DELETE /api/v1/events/{id}` - Delete event
+
+**Users, Venues, Categories, Registrations, Reviews, Notifications, Analytics** - See full documentation.
+
+---
+
+## User Roles & Access
+
+| Role | Permissions |
+|------|-------------|
+| **Attendee** | Browse events, register for events, leave reviews, manage profile |
+| **Organizer** | All Attendee permissions + Create/edit/delete own events, view analytics |
+| **Admin** | Full access - Manage all users, events, categories, venues |
+
+### Creating Admin Account
+
+1. Visit: https://local-event-app.vercel.app/
+2. Click "Create account"
+3. Select "Admin access (full control)" from role dropdown
+4. Complete registration
+
+---
+
+---
+
+## Live Deployment
+
+| Service | URL | Branch |
+|---------|-----|--------|
+| **Frontend** | https://local-event-app.vercel.app | `frontend-b` |
+| **Backend API** | https://localeventorganizer.onrender.com/api/v1 | `BACK-END` |
+| **API Documentation** | https://localeventorganizer.onrender.com/swagger | `BACK-END` |
+
+---
+
+**Phase 1 Complete** ✅ — Project description, problem statement, and team formation established.  
+**Phase 2 Complete** ✅ — Project setup, branch strategy, and team workflow defined.  
+**Phase 3 Complete** ✅ — Frontend and backend implementation finished and deployed.
 
 ---
 
@@ -190,26 +252,43 @@ API runs on http://localhost:5000 — Swagger UI available at http://localhost:5
 | Feature | Status |
 |---------|--------|
 | ASP.NET Core Web API setup | ✅ Done |
-| JWT Authentication | ✅ Done |
+| JWT Authentication (Login/Register) | ✅ Done |
+| Password Reset (Forgot/Reset) | ✅ Done |
 | User roles (Attendee, Organizer, Admin) | ✅ Done |
-| Users endpoints | ✅ Done |
-| Events endpoints | ✅ Done |
-| Categories endpoints | ✅ Done |
-| Database context (EF Core) | ✅ Done |
-| Connect frontend to backend | ⏳ Pending |
+| Users CRUD endpoints | ✅ Done |
+| Events CRUD endpoints | ✅ Done |
+| Categories CRUD endpoints | ✅ Done |
+| Venues CRUD endpoints | ✅ Done |
+| Registrations endpoints | ✅ Done |
+| Reviews & Ratings endpoints | ✅ Done |
+| Notifications endpoints | ✅ Done |
+| Analytics endpoints | ✅ Done |
+| Database schema (PostgreSQL + EF Core) | ✅ Done |
+| CORS configuration | ✅ Done |
+| SignalR real-time events | ✅ Done |
+| Deployed to Render | ✅ Done |
 
 ### Frontend (Vue.js) — Julien & Claire
 | Feature | Status |
 |---------|--------|
-| Vue.js + Vite project setup | ✅ Done |
+| Vue.js 3 + Vite project setup | ✅ Done |
 | Global design system & styles | ✅ Done |
+| Landing page (Hero, Features, Pricing) | ✅ Done |
+| Authentication (Login/Register/Password Reset) | ✅ Done |
+| Role-based routing (Attendee/Organizer/Admin) | ✅ Done |
 | App layout (nav + sidebar + filters) | ✅ Done |
-| Home page | ✅ Done |
-| Events page (3-col grid + sections) | ✅ Done |
+| Browse Events page (grid + search) | ✅ Done |
+| Event detail modal with reviews | ✅ Done |
 | Event card component | ✅ Done |
-| Event detail page | ✅ Done |
-| Login page | ✅ Done |
-| Register page | ✅ Done |
-| Organizer dashboard (CRUD) | ✅ Done |
-| Admin dashboard (users + events) | ✅ Done |
-| Connect frontend to backend API | 🔄 In Progress |
+| Create/Edit Event form | ✅ Done |
+| Image upload & URL support | ✅ Done |
+| Venue management with map picker | ✅ Done |
+| Category management | ✅ Done |
+| Organizer dashboard (My Events CRUD) | ✅ Done |
+| Analytics dashboard | ✅ Done |
+| Admin dashboard (users + events management) | ✅ Done |
+| Notifications system | ✅ Done |
+| User profile management | ✅ Done |
+| Star rating system | ✅ Done |
+| Connected to backend API | ✅ Done |
+| Deployed to Vercel | ✅ Done |

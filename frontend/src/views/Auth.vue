@@ -77,8 +77,10 @@
           <label class="form-label">I want to</label>
           <select v-model="role" class="form-input">
             <option value="Attendee">Discover & attend events</option>
+            <option value="Organizer">Organize & manage events</option>
+            <option value="Admin">Admin access (full control)</option>
           </select>
-          <p style="font-size:12px;color:var(--text3);margin-top:6px">Only attendee registration is available. Organizer access is admin-only.</p>
+          <p style="font-size:12px;color:var(--text3);margin-top:6px">Select your role. Admin access grants full platform control.</p>
         </div>
         <button class="btn btn-amber btn-full" :disabled="loading" @click="handleRegister">
           <span v-if="loading" class="loading-spinner"></span>
@@ -216,8 +218,13 @@ async function handleRegister() {
   if (password.value.length < 8) { error.value = 'Password must be at least 8 characters.'; return }
   loading.value = true
   try {
-    await auth.register(name.value, email.value, password.value, 'Attendee')
-    router.push('/attendee/dashboard')
+    await auth.register(name.value, email.value, password.value, role.value)
+    // Redirect based on role
+    if (role.value === 'Organizer' || role.value === 'Admin') {
+      router.push('/organizer/dashboard')
+    } else {
+      router.push('/attendee/dashboard')
+    }
   } catch (e) {
     error.value = e.message || 'Registration failed. Please try again.'
   } finally {
