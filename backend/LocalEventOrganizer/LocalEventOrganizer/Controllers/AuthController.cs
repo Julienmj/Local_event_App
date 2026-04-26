@@ -1,11 +1,15 @@
 using LocalEventOrganizer.Data;
 using LocalEventOrganizer.DTOs;
 using LocalEventOrganizer.Models;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace LocalEventOrganizer.Controllers
@@ -46,6 +50,63 @@ namespace LocalEventOrganizer.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { user.UserID, user.FullName, user.Email, user.Role });
+        }
+
+        // POST /api/v1/auth/forgot-password
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+            if (user == null) return Ok("If that email exists, a reset link has been sent.");
+
+            var rawToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+            user.ResetToken = BCrypt.Net.BCrypt.HashPassword(rawToken);
+            user.ResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+            await _context.SaveChangesAsync();
+
+            var resetLink = $"{_config["App:FrontendUrl"]}/reset-password?token={rawToken}&email={user.Email}";
+
+            var message = new MimeMessage();
+            message.From.Add(MailboxAddress.Parse(_config["Email:From"]));
+            message.To.Add(MailboxAddress.Parse(user.Email));
+            message.Subject = "Password Reset Request";
+            message.Body = new TextPart("html")
+            {
+                Text = $"<p>Click <a href='{resetLink}'>here</a> to reset your password. Link expires in 1 hour.</p>"
+            };
+
+            using var smtp = new SmtpClient();
+            await smtp.ConnectAsync(_config["Email:Host"], int.Parse(_config["Email:Port"]!), SecureSocketOptions.StartTls);
+            await smtp.AuthenticateAsync(_config["Email:Username"], _config["Email:Password"]);
+            await smtp.SendAsync(message);
+            await smtp.DisconnectAsync(true);
+
+#if DEBUG
+            return Ok(new { message = "Reset link sent.", resetLink });
+#else
+            return Ok("If that email exists, a reset link has been sent.");
+#endif
+        }
+
+        // POST /api/v1/auth/reset-password
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+
+            if (user == null
+                || user.ResetToken == null
+                || user.ResetTokenExpiry == null
+                || DateTime.SpecifyKind(user.ResetTokenExpiry.Value, DateTimeKind.Utc) < DateTime.UtcNow
+                || !BCrypt.Net.BCrypt.Verify(dto.Token, user.ResetToken))
+                return BadRequest("Invalid or expired token.");
+
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            user.ResetToken = null;
+            user.ResetTokenExpiry = null;
+            await _context.SaveChangesAsync();
+
+            return Ok("Password reset successfully.");
         }
 
         // POST /api/v1/auth/login

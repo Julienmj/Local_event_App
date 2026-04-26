@@ -14,6 +14,7 @@ namespace LocalEventOrganizer.Models
         public int VenueID { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? ImageUrl { get; set; }
 
         // Navigation properties
         public User? Organizer { get; set; }

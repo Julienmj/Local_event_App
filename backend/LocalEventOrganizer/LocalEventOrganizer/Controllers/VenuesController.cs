@@ -38,7 +38,9 @@ namespace LocalEventOrganizer.Controllers
                 Name = dto.Name,
                 Address = dto.Address,
                 City = dto.City,
-                Capacity = dto.Capacity
+                Capacity = dto.Capacity,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude
             };
 
             _context.Venues.Add(venue);
@@ -58,6 +60,8 @@ namespace LocalEventOrganizer.Controllers
             venue.Address = dto.Address;
             venue.City = dto.City;
             venue.Capacity = dto.Capacity;
+            venue.Latitude = dto.Latitude;
+            venue.Longitude = dto.Longitude;
 
             await _context.SaveChangesAsync();
             return Ok(venue);

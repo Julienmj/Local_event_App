@@ -71,9 +71,9 @@
           <label class="form-label">Status</label>
           <select v-model="editModal.form.status" class="form-input">
             <option value="Pending">Pending</option>
-            <option value="upcoming">Upcoming</option>
-            <option value="live">Live</option>
-            <option value="past">Past</option>
+            <option value="Active">Active</option>
+            <option value="Cancelled">Cancelled</option>
+            <option value="Completed">Completed</option>
           </select>
         </div>
         <div v-if="editError" class="error-msg">{{ editError }}</div>
@@ -128,7 +128,7 @@ function openEdit(ev) {
     price: ev.price || 0,
     capacity: ev.maxAttendees || ev.capacity || 100,
     description: ev.description || '',
-    status: ev.status || 'upcoming'
+    status: ev.status || 'Pending'
   }
   editError.value = ''
   editModal.show = true

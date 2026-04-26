@@ -30,7 +30,7 @@ namespace LocalEventOrganizer.Controllers
                 .Select(e => new
                 {
                     e.EventID, e.Title, e.Description, e.EventDate,
-                    e.MaxAttendees, e.Status, e.VenueID, e.CreatedAt,
+                    e.MaxAttendees, e.Status, e.VenueID, e.ImageUrl, e.CreatedAt,
                     Organizer = new { e.Organizer!.UserID, e.Organizer.FullName },
                     Category = new { e.Category!.CategoryID, e.Category.Name }
                 })
@@ -54,7 +54,7 @@ namespace LocalEventOrganizer.Controllers
             return Ok(new
             {
                 e.EventID, e.Title, e.Description, e.EventDate,
-                e.MaxAttendees, e.Status, e.VenueID, e.CreatedAt,
+                e.MaxAttendees, e.Status, e.VenueID, e.ImageUrl, e.CreatedAt,
                 Organizer = new { e.Organizer!.UserID, e.Organizer.FullName },
                 Category = new { e.Category!.CategoryID, e.Category.Name }
             });
@@ -122,7 +122,8 @@ namespace LocalEventOrganizer.Controllers
                 Status = dto.Status,
                 OrganizerID = dto.OrganizerID,
                 CategoryID = dto.CategoryID,
-                VenueID = dto.VenueID
+                VenueID = dto.VenueID,
+                ImageUrl = dto.ImageUrl
             };
 
             _context.Events.Add(newEvent);
@@ -149,6 +150,7 @@ namespace LocalEventOrganizer.Controllers
             e.Status = dto.Status ?? e.Status;
             e.CategoryID = dto.CategoryID ?? e.CategoryID;
             e.VenueID = dto.VenueID ?? e.VenueID;
+            e.ImageUrl = dto.ImageUrl ?? e.ImageUrl;
 
             await _context.SaveChangesAsync();
             return Ok(e);

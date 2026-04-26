@@ -36,6 +36,7 @@ export const useEventsStore = defineStore('events', () => {
     const catName = e.category?.name || e.categoryName || 'Other'
     return { 
       ...e, 
+      id: e.id || e.eventID || e.EventID,
       categoryID: e.categoryID || e.category?.id || e.category?.CategoryID,
       venueID: e.venueID || e.venue?.id || e.venue?.VenueID,
       organizerID: e.organizerID || e.organizerId || e.OrganizerID,
@@ -94,8 +95,18 @@ export const useEventsStore = defineStore('events', () => {
         api.get(`/notifications/user/${userId}`).catch(() => []),
         api.get(`/registrations/user/${userId}`).catch(() => [])
       ])
-      notifications.value = notifs
-      registrations.value = regs
+      notifications.value = notifs.map(n => ({
+        ...n,
+        id: n.notificationID || n.id,
+        isRead: n.isRead ?? n.IsRead ?? false,
+        message: n.message || n.Message || n.title || n.Title || ''
+      }))
+      registrations.value = regs.map(r => ({
+        ...r,
+        id: r.registrationID || r.RegistrationID || r.id,
+        eventID: r.eventID || r.EventID || r.event?.eventID,
+        userID: r.userID || r.UserID
+      }))
       
       // Analytics might 404 if no events exist yet
       api.get(`/analytics/organizer/${userId}`)
@@ -180,8 +191,8 @@ export const useEventsStore = defineStore('events', () => {
   async function registerForEvent(userId, eventId) {
     const data = await api.post('/registrations', {
       userID: userId,
-      eventID: eventId,
-      status: 'confirmed'
+      eventID: parseInt(eventId),
+      status: 'Confirmed'
     })
     registrations.value.push(data)
     addNotification('Registration confirmed!')
@@ -236,7 +247,7 @@ export const useEventsStore = defineStore('events', () => {
 
   function markRead(id) {
     api.put(`/notifications/${id}/read`, {}).catch(() => {})
-    const n = notifications.value.find(n => n.id === id)
+    const n = notifications.value.find(n => n.id === id || n.notificationID === id)
     if (n) n.isRead = true
   }
 
