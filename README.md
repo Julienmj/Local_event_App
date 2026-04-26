@@ -100,8 +100,6 @@ git push origin yourname+id-workspace
 ## Project Repository
 https://github.com/Julienmj/Group12-Dotnet-project-
 
-🌐 **Live Demo:** https://group12-dotnet-project.vercel.app
-
 ---
 
 ## Getting Started
@@ -138,12 +136,22 @@ Open http://localhost:5173 in your browser.
 All frontend code lives inside `frontend/src/`:
 ```
 frontend/src/
-├── pages/        → one file per page
-├── components/   → reusable components
-├── stores/       → auth state (Pinia)
-├── router/       → page routes
-├── api.js        → axios base config
-└── styles.css    → global design system
+├── views/
+│   ├── app/      → Dashboard, BrowseEvents, CreateEvent, MyEvents, etc.
+│   ├── Auth.vue  → Login & Register
+│   └── Landing.vue
+├── components/
+│   ├── landing/  → Landing page sections
+│   ├── EventCard.vue
+│   ├── EventModal.vue
+│   ├── SidebarNav.vue
+│   ├── AiCopilot.vue
+│   └── AppToast.vue
+├── stores/       → Pinia stores (auth, events)
+├── composables/  → useApi.js, useToast.js
+├── router/       → index.js
+├── data/         → demo.js (fallback data)
+└── assets/styles → main.css (global design system)
 ```
 
 ---
@@ -204,4 +212,4 @@ API runs on http://localhost:5000 — Swagger UI available at http://localhost:5
 | Register page | ✅ Done |
 | Organizer dashboard (CRUD) | ✅ Done |
 | Admin dashboard (users + events) | ✅ Done |
-| Connect frontend to backend API | ⏳ Pending |
+| Connect frontend to backend API | 🔄 In Progress |

@@ -81,19 +81,24 @@ namespace LocalEventOrganizer.Controllers
             await smtp.SendAsync(message);
             await smtp.DisconnectAsync(true);
 
+#if DEBUG
+            return Ok(new { message = "Reset link sent.", resetLink });
+#else
             return Ok("If that email exists, a reset link has been sent.");
+#endif
         }
 
         // POST /api/v1/auth/reset-password
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u =>
-                u.Email == dto.Email &&
-                u.ResetTokenExpiry != null &&
-                u.ResetTokenExpiry > DateTime.UtcNow);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
-            if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Token, user.ResetToken))
+            if (user == null
+                || user.ResetToken == null
+                || user.ResetTokenExpiry == null
+                || DateTime.SpecifyKind(user.ResetTokenExpiry.Value, DateTimeKind.Utc) < DateTime.UtcNow
+                || !BCrypt.Net.BCrypt.Verify(dto.Token, user.ResetToken))
                 return BadRequest("Invalid or expired token.");
 
             user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
