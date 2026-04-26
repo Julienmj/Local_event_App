@@ -85,13 +85,14 @@
             <div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--ink2);display:flex;align-items:center;gap:5px">
               <i class="ph ph-pencil-simple" style="color:var(--a400)"></i> Leave a review
             </div>
-            <div class="star-input">
+            <div class="star-input"
+              @mouseleave="hoverRating = 0"
+            >
               <i
                 v-for="s in 5" :key="s"
                 :class="getStarClass(s)"
                 @click="setRating(s)"
                 @mouseenter="hoverRating = s"
-                @mouseleave="hoverRating = 0"
               ></i>
             </div>
             <textarea
@@ -160,13 +161,12 @@ const formattedTime = computed(() => {
 })
 
 function getStarClass(starNumber) {
-  const isActive = hoverRating.value > 0 ? hoverRating.value >= starNumber : stars.value >= starNumber
-  return isActive ? 'ph-fill ph-star star-btn active' : 'ph ph-star star-btn'
+  const active = (hoverRating.value || stars.value) >= starNumber
+  return active ? 'ph-fill ph-star star-btn active' : 'ph ph-star star-btn'
 }
 
 function setRating(rating) {
   stars.value = rating
-  hoverRating.value = 0
 }
 
 async function handleRegister() {
@@ -198,7 +198,7 @@ async function submitReview() {
   }
   try {
     const newReview = await api.post('/reviews', {
-      eventID: props.event.id,
+      eventID: parseInt(props.event.id),
       userID: auth.user.id || auth.user.userID,
       rating: stars.value,
       comment: reviewText.value.trim(),
